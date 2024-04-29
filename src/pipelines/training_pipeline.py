@@ -4,8 +4,9 @@ import os
 import sys
 
 from lightning.pytorch import Trainer
-from lightning.pytorch.loggers import TensorBoardLogger
+from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import EarlyStopping, TQDMProgressBar
+import wandb
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
@@ -50,17 +51,17 @@ def training_pipeline(args: argparse.Namespace):
     print("Complete load model")
 
     # Load logger
-    logger = TensorBoardLogger("tb_logs", "my_model")
+    wandb.login(key='53f5746150b2ce7b0552996cb6acc3beec6e487f')
+    logger = WandbLogger(name="face-anti-spoof", project="cv-project")
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=3, verbose=False, mode="max")
-    tqdm_callback = MyProgressBar()
-    callbacks = [es_callback, tqdm_callback]
+    # es_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=3, verbose=False, mode="max")
+    # tqdm_callback = MyProgressBar()
+    # callbacks = [es_callback, tqdm_callback]
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs, 
-                      logger=logger,
-                      callbacks=callbacks)
+                      logger=logger)
     
     trainer.fit(model, train_loader, val_loader)
 
