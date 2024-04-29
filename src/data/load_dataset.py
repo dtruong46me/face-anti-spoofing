@@ -43,7 +43,7 @@ class LCCFASDataset(pl.LightningDataModule):
         print(2)
         self.test = datasets.ImageFolder(self.test_path, transform=self.get_transform)
 
-    def setup(self, stage: str) -> None:
+    def setup(self, stage: str="fit") -> None:
         print(3)
         self.train, self.val = random_split(
             self.train, lengths=[0.7, 0.3], generator=Generator().manual_seed(42)
