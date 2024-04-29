@@ -58,12 +58,10 @@ class LCCFASDataset(pl.LightningDataModule):
                 val_size = len(self.train) - train_size
                 
                 logger.info(f"Splitting image with size: 70/30")
-                train, val = random_split(
+                self.train, self.val = random_split(
                     self.train, lengths=[train_size, val_size], generator=Generator().manual_seed(42)
                 )
 
-            return train, val
-        
         except Exception as e:
             logger.error(f"Error while splitting data: {e}")
             raise e
