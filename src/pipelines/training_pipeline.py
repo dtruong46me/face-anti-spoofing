@@ -16,11 +16,17 @@ def training_pipeline(args: argparse.Namespace):
     data = load_data(args)
     data.prepare_data()
     data.setup()
+    train_loader = data.train_dataloader()
+    val_loader = data.val_dataloader()
+
+    print("Complete load data")
 
     # Load model
     model = load_model(modelname=args.modelname, 
                        input_shape=args.input_shape, 
                        num_classes=args.num_classes)
+    
+    print("Complete load model")
 
     # Load callbacks
     # es_callback = pl.EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
@@ -30,8 +36,12 @@ def training_pipeline(args: argparse.Namespace):
     trainer = pl.Trainer(default_root_dir="/kaggle/working/",
                          max_epochs=10)
     
-    trainer.fit(model, data.train_dataloader(), data.val_dataloader())
+    trainer.fit(model, train_loader, val_loader)
+
+    print("Complete training")
+    
     model.on_save_checkpoint("first_model.ckpt")
+    print("Complete save checkpoint")
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
