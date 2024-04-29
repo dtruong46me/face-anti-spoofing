@@ -42,16 +42,16 @@ class SEResNeXT50(LightningModule):
     
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
-        self.log_dict({"train_loss": loss}, 
-                      on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        print("train_loss_: ", loss)
+        # self.log_dict({"train_loss": loss}, 
+        #               on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log(name="train_loss", value=loss, prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
-        self.log_dict({"val_loss": loss}, 
-                      on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        print("val_loss_: ", loss)
+        # self.log_dict({"val_loss": loss}, 
+        #               on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log(name="val_loss", value=loss, prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
     
     def test_step(self, batch):
