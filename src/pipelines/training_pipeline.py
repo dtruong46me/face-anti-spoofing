@@ -4,7 +4,6 @@ import os
 import sys
 
 import pytorch_lightning as pl
-from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
@@ -22,13 +21,12 @@ def training_pipeline(args: argparse.Namespace):
                        num_classes=args.num_classes)
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
-    callbacks = [es_callback]
+    # es_callback = pl.EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
+    # callbacks = [es_callback]
 
     # Load trainer
     trainer = pl.Trainer(default_root_dir="/kaggle/working/",
-                         max_epochs=10,
-                         callbacks=callbacks)
+                         max_epochs=10)
     
     trainer.fit(model, data.train_dataloader(), data.val_dataloader())
     model.on_save_checkpoint("first_model.ckpt")
