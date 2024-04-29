@@ -34,7 +34,7 @@ def training_pipeline(args: argparse.Namespace):
     logger = TensorBoardLogger("tb_logs", "my_model")
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
+    es_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=3, verbose=False, mode="max")
     callbacks = [es_callback]
 
     # Load trainer
