@@ -14,18 +14,17 @@ class SEResNeXT50(LightningModule):
         self.num_classes = num_classes
 
         self.backbone = resnext50_32x4d(weights=ResNeXt50_32X4D_Weights.IMAGENET1K_V2)
-
+        
         for param in self.backbone.parameters():
             param.requires_grad = False
 
-        for layer in self.backbone.named_parameters():
-            print(layer)
+        in_features = self.backbone.fc.in_features
 
-        in_feat = self.backbone.fc.in_features
+        # Delete the last layer
+        self.backbone.fc = nn.Identity()
 
-        print(in_feat, ">>>>")
+        self.fc = nn.Linear(in_features=in_features, out_features=512)
 
-        self.fc = nn.Linear(in_features=in_feat, out_features=512)
         self.dropout = nn.Dropout(p=0.5)
 
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
@@ -78,6 +77,9 @@ def load_model(modelname: Literal["seresnext50", "mobilenet", "feathernet"], inp
     except Exception as e:
         raise e
     
-if __name__=='__main__':
-    model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
-    print(summarize(model))
+# if __name__=='__main__':
+#     model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
+#     print("++++++++++")
+#     for name, param in model.named_parameters():
+#         print(name, param.size())
+#     print(summarize(model))
