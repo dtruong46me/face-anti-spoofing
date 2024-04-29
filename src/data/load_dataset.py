@@ -114,16 +114,16 @@ def load_data(args):
         logger.error(f"Error while loading data: {e}")
         raise e
     
-# if __name__=='__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
-#     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
-#     parser.add_argument("--batch_size", type=int, default=64)
-#     args = parser.parse_args()
+if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
+    parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
+    parser.add_argument("--batch_size", type=int, default=64)
+    args = parser.parse_args()
 
-#     dataset = LCCFASDataset(args)
-#     dataset.prepare_data()
-#     dataset.setup()
-#     train_loader = dataset.train_dataloader()
-#     val_loader = dataset.val_dataloader()
-#     test_loader = dataset.test_dataloader()
+    dataset = LCCFASDataset(args)
+    dataset.prepare_data()
+    dataset.setup()
+    train_loader = dataset.train_dataloader()
+    val_loader = dataset.val_dataloader()
+    test_loader = dataset.test_dataloader()
