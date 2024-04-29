@@ -38,24 +38,31 @@ class LCCFASDataset(pl.LightningDataModule):
         '''
 
     def prepare_data(self) -> None:
+        print(1)
         self.train = datasets.ImageFolder(self.train_path, transform=self.get_transform)
+        print(2)
         self.test = datasets.ImageFolder(self.test_path, transform=self.get_transform)
 
     def setup(self, stage: str) -> None:
+        print(3)
         self.train, self.val = random_split(
             self.train, lengths=[0.7, 0.3], generator=Generator().manual_seed(42)
         )
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
+        print(4)
         return DataLoader(self.train, batch_size=self.batch_size)
     
     def val_dataloader(self) -> TRAIN_DATALOADERS:
+        print(5)
         return DataLoader(self.val, self.batch_size)
     
     def test_dataloader(self) -> TRAIN_DATALOADERS:
+        print(6)
         return DataLoader(self.test, self.batch_size)
     
     def get_transform(self):
+        print(7)
         preprocess = transforms.Compose([
             transforms.Resize([224, 224]),
             transforms.ToTensor(),
@@ -69,4 +76,13 @@ if __name__=='__main__':
     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_test")
     parser.add_argument("--batch_size", type=int, default=64)
-    parser.parse_args()
+    args = parser.parse_args()
+
+    dataset = LCCFASDataset(args)
+    dataset.setup()
+    train_loader = dataset.train_dataloader()
+    print(train_loader)
+    val_loader = dataset.val_dataloader()
+    print(val_loader)
+    test_loader = dataset.test_dataloader()
+    print(test_loader)
