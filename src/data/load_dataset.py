@@ -79,6 +79,7 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     dataset = LCCFASDataset(args)
+    dataset.prepare_data()
     dataset.setup()
     train_loader = dataset.train_dataloader()
     print(train_loader)
