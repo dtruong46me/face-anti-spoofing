@@ -51,7 +51,7 @@ def training_pipeline(args: argparse.Namespace):
     print("Complete load model")
 
     # Load logger
-    wandb.login(key='53f5746150b2ce7b0552996cb6acc3beec6e487f')
+    wandb.login(key='c74fcec22fbb4be075a981b1f3db3f464b15b089')
     logger = WandbLogger(name="face-anti-spoof", project="cv-project")
 
     # Load callbacks
