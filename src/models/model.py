@@ -31,10 +31,12 @@ class SEResNeXT50(pl.LightningModule):
         
 
     def forward(self, x):
-        x = self.backbone(x)
-        output = self.dropout(x)
-        output = self.fc(output)
-        return output
+        out = self.backbone(x)
+        out = self.dropout1(out)
+        out = self.fc(out)
+        out = self.dropout2(out)
+        out = self.classifier(out)
+        return out
     
     def configure_optimizers(self):
         return Adam(self.parameters(), lr=5e-4, weight_decay=0.05)
