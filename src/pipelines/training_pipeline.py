@@ -5,13 +5,32 @@ import sys
 
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import TensorBoardLogger
-from lightning.pytorch.callbacks import EarlyStopping
+from lightning.pytorch.callbacks import EarlyStopping, TQDMProgressBar
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
 from models.model import load_model
 from data.load_dataset import load_data
+
+class MyProgressBar(TQDMProgressBar):
+    def init_validation_tqdm(self):
+        bar = super().init_validation_tqdm()
+        if not sys.stdout.isatty():
+            bar.disable = True
+        return bar
+
+    def init_predict_tqdm(self):
+        bar = super().init_predict_tqdm()
+        if not sys.stdout.isatty():
+            bar.disable = True
+        return bar
+
+    def init_test_tqdm(self):
+        bar = super().init_test_tqdm()
+        if not sys.stdout.isatty():
+            bar.disable = True
+        return bar
 
 def training_pipeline(args: argparse.Namespace):
     # Load dataset
@@ -35,7 +54,8 @@ def training_pipeline(args: argparse.Namespace):
 
     # Load callbacks
     es_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=3, verbose=False, mode="max")
-    callbacks = [es_callback]
+    tqdm_callback = MyProgressBar()
+    callbacks = [es_callback, tqdm_callback]
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs, 
