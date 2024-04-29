@@ -4,8 +4,7 @@ from torch.optim import Adam
 import torch
 import torch.nn as nn
 from torchvision.models import resnext50_32x4d, ResNeXt50_32X4D_Weights
-from torchsummary import summary
-from pytorch_lightning.utilities.model_summary import summarize, ModelSummary
+from pytorch_lightning.utilities.model_summary import summarize
 
 
 class SEResNeXT50(pl.LightningModule):
@@ -19,22 +18,21 @@ class SEResNeXT50(pl.LightningModule):
         for param in self.backbone.parameters():
             param.requires_grad = False
 
-        self.dropout1 = nn.Dropout(p=0.5)
+        in_feat = self.backbone.fc.in_features
 
-        self.fc = nn.Linear(in_features=self.backbone.fc.in_features, 
-                            out_features=512)
-        
-        self.dropout2 = nn.Dropout(p=0.5)
+        print(in_feat, ">>>>")
 
-        self.classifier = nn.Linear(in_features=512,
-                                    out_features=num_classes)
-        
+        self.backbone.fc = nn.Dropout(p=0.5)
+
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=in_feat,
+                      out_features=512),
+            nn.Dropout(p=0.5),
+            nn.Linear(in_features=512, out_features=num_classes)
+        )
 
     def forward(self, x):
         out = self.backbone(x)
-        out = self.dropout1(out)
-        out = self.fc(out)
-        out = self.dropout2(out)
         out = self.classifier(out)
         return out
     
@@ -78,6 +76,6 @@ def load_model(modelname: Literal["seresnext50", "mobilenet", "feathernet"], inp
     except Exception as e:
         raise e
     
-# if __name__=='__main__':
-#     model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
-#     print(summarize(model))
+if __name__=='__main__':
+    model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
+    print(summarize(model))
