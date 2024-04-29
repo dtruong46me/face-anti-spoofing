@@ -14,6 +14,8 @@ from data.load_dataset import load_data
 def training_pipeline(args: argparse.Namespace):
     # Load dataset
     data = load_data(args)
+    data.prepare_data()
+    data.setup()
 
     # Load model
     model = load_model(modelname=args.modelname, 

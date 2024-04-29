@@ -61,9 +61,7 @@ class LCCFASDataset(pl.LightningDataModule):
                 self.train, self.val = random_split(
                     self.train, lengths=[train_size, val_size], generator=Generator().manual_seed(42)
                 )
-
         except Exception as e:
-            logger.error(f"Error while splitting data: {e}")
             raise e
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
