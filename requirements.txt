@@ -1,1 +1,3 @@
 lightning
+torch
+streamlit

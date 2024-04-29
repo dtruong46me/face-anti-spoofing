@@ -17,7 +17,9 @@ def training_pipeline(args: argparse.Namespace):
     data = load_data(args)
 
     # Load model
-    model = load_model(args.input_shape, args.num_classes)
+    model = load_model(modelname=args.modelname, 
+                       input_shape=args.input_shape, 
+                       num_classes=args.num_classes)
 
     # Load callbacks
     es_callback = EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
@@ -35,6 +37,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
+    parser.add_argument("--modelname", type=str, default="seresnext50")
     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
     parser.add_argument("--batch_size", type=int, default=64)
