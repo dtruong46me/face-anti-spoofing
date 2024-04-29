@@ -47,7 +47,7 @@ def training_pipeline(args: argparse.Namespace):
     print("Complete training")
     
     model.on_save_checkpoint("first_model.ckpt")
-    model.on_save_checkpoint("checkpoint_model.pht")
+    model.on_save_checkpoint("checkpoint_model.pth")
     print("Complete save checkpoint")
 
 if __name__=='__main__':

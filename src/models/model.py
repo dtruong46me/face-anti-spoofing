@@ -74,6 +74,8 @@ def load_model(modelname: Literal["seresnext50", "mobilenet", "feathernet"], inp
             model.to(device)
             return model
         
+        print(device)
+        
     except Exception as e:
         raise e
     
