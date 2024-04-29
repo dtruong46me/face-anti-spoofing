@@ -18,21 +18,22 @@ class SEResNeXT50(LightningModule):
         for param in self.backbone.parameters():
             param.requires_grad = False
 
+        for layer in self.backbone.named_parameters():
+            print(layer)
+
         in_feat = self.backbone.fc.in_features
 
         print(in_feat, ">>>>")
 
-        self.backbone.fc = nn.Linear(in_features=in_feat, out_features=512)
+        self.fc = nn.Linear(in_features=in_feat, out_features=512)
         self.dropout = nn.Dropout(p=0.5)
 
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
 
-        print(self.backbone)
-
 
     def forward(self, x):
         out = self.backbone(x)
-        out = self.backbone.fc(out)
+        out = self.fc(out)
         out = self.dropout(out)
         out = self.classifier(out)
         return out
