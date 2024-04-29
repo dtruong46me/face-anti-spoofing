@@ -39,21 +39,29 @@ class SEResNeXT50(pl.LightningModule):
     def config_optimizers(self):
         return Adam(lr=5e-4, weight_decay=0.05)
     
-    def training_step(self, batch):
-        images, labels = batch
-        outputs = self.forward(images)
-        loss = nn.CrossEntropyLoss()(outputs, labels)
+    def training_step(self, batch, batch_idx):
+        loss, outputs, labels = self._common_step(batch, batch_idx)
+        self.log_dict({"train_loss": loss, "train_accuracy": None, "train_f1_score": None}, 
+                      on_step=False, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
-    def validation_step(self, batch):
-        results = self.training_step(batch)
-        return results
+    def validation_step(self, batch, batch_idx):
+        loss, outputs, labels = self._common_step(batch, batch_idx)
+        self.log_dict({"val_loss": loss, "val_accuracy": None, "val_f1_score": None}, 
+                      on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        return loss
     
     def test_step(self, batch):
         images, labels = batch
         outputs = self.forward(images)
         _, preds = torch.max(outputs.data, 1)
         return preds
+    
+    def _common_step(self, batch, batch_idx):
+        images, labels = batch
+        outputs = self.forward(images)
+        loss = nn.CrossEntropyLoss()(outputs, labels)
+        return loss, outputs, labels
 
 
 def load_model(modelname: Literal["seresnext50", "mobilenet", "feathernet"], input_shape, num_classes):
@@ -68,9 +76,6 @@ def load_model(modelname: Literal["seresnext50", "mobilenet", "feathernet"], inp
     except Exception as e:
         raise e
     
-
-if __name__=='__main__':
-
-    model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
-
-    print(summarize(model))
+# if __name__=='__main__':
+#     model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
+#     print(summarize(model))

@@ -27,3 +27,5 @@ def training_pipeline(args: argparse.Namespace):
                          callbacks=callbacks)
     
     trainer.fit(model, train_dataloader, val_dataloader)
+
+    
