@@ -36,8 +36,8 @@ class SEResNeXT50(pl.LightningModule):
         output = self.fc(output)
         return output
     
-    def config_optimizers(self):
-        return Adam(lr=5e-4, weight_decay=0.05)
+    def configure_optimizers(self):
+        return Adam(self.parameters(), lr=5e-4, weight_decay=0.05)
     
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
