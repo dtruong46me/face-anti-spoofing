@@ -40,11 +40,18 @@ class LCCFASDataset(pl.LightningDataModule):
 
     def prepare_data(self) -> None:
         try:
+            preprocess = transforms.Compose([
+                transforms.Resize([224, 224]),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                    std=[0.229, 0.224, 0.225])
+            ])
+
             logger.info(f"Loading image from {self.train_path}")
-            self.train = datasets.ImageFolder(self.train_path, transform=self.get_transform)
+            self.train = datasets.ImageFolder(self.train_path, transform=preprocess)
             
             logger.info(f"Loading image from {self.test_path}")
-            self.test = datasets.ImageFolder(self.test_path, transform=self.get_transform)
+            self.test = datasets.ImageFolder(self.test_path, transform=preprocess)
 
         except Exception as e:
             logger.error(f"Error while loading image: {e}")
@@ -66,14 +73,14 @@ class LCCFASDataset(pl.LightningDataModule):
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         try:
-            return DataLoader(self.train, batch_size=self.batch_size, shuffle=True)
+            return DataLoader(self.train, batch_size=self.batch_size, shuffle=True, num_workers=4)
         
         except Exception as e:
             raise e
     
     def val_dataloader(self) -> EVAL_DATALOADERS:
         try:
-            return DataLoader(self.val, self.batch_size, shuffle=False)
+            return DataLoader(self.val, self.batch_size, shuffle=False, num_workers=4)
         
         except Exception as e:
             raise e
@@ -85,18 +92,18 @@ class LCCFASDataset(pl.LightningDataModule):
         except Exception as e:
             raise e
     
-    def get_transform(self):
-        try:
-            preprocess = transforms.Compose([
-                transforms.Resize([224, 224]),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                    std=[0.229, 0.224, 0.225])
-            ])
-            return preprocess
+    # def get_transform(self):
+    #     try:
+    #         preprocess = transforms.Compose([
+    #             transforms.Resize([224, 224]),
+    #             transforms.ToTensor(),
+    #             transforms.Normalize(mean=[0.485, 0.456, 0.406],
+    #                                 std=[0.229, 0.224, 0.225])
+    #         ])
+    #         return preprocess
         
-        except Exception as e:
-            raise e
+    #     except Exception as e:
+    #         raise e
         
 def load_data(args):
     try:
