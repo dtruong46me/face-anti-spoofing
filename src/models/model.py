@@ -67,16 +67,14 @@ class SEResNeXT50(LightningModule):
         return loss, outputs, labels
 
 
-def load_model(modelname: Literal["seresnext50", "mobilenet", "feathernet"], input_shape, num_classes):
+def load_model(modelname: str, input_shape, num_classes):
     try:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+        print(device)
         if modelname == "seresnext50":
             model = SEResNeXT50(input_shape, num_classes)
             model.to(device)
             return model
-        
-        print(device)
         
     except Exception as e:
         raise e
