@@ -3,7 +3,9 @@ import argparse
 import os
 import sys
 
-import pytorch_lightning as pl
+from lightning.pytorch import Trainer
+from lightning.pytorch.loggers import TensorBoardLogger
+from lightning.pytorch.callbacks import EarlyStopping
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
@@ -28,19 +30,24 @@ def training_pipeline(args: argparse.Namespace):
     
     print("Complete load model")
 
+    # Load logger
+    logger = TensorBoardLogger("tb_logs", "my_model")
+
     # Load callbacks
-    # es_callback = pl.EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
-    # callbacks = [es_callback]
+    es_callback = EarlyStopping(monitor="val_accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
+    callbacks = [es_callback]
 
     # Load trainer
-    trainer = pl.Trainer(default_root_dir="/kaggle/working/",
-                         max_epochs=10)
+    trainer = Trainer(max_epochs=args.max_epochs, 
+                      logger=logger,
+                      callbacks=callbacks)
     
     trainer.fit(model, train_loader, val_loader)
 
     print("Complete training")
     
     model.on_save_checkpoint("first_model.ckpt")
+    model.on_save_checkpoint("checkpoint_model.pht")
     print("Complete save checkpoint")
 
 if __name__=='__main__':
@@ -51,6 +58,7 @@ if __name__=='__main__':
     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
     parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--max_epochs", type=int, default=10)
     args = parser.parse_args()
 
     training_pipeline(args)

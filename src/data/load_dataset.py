@@ -1,10 +1,11 @@
 
 import logging
-import pytorch_lightning as pl
+
+from lightning.pytorch import LightningDataModule
 
 from torch.utils.data import random_split, DataLoader
 from torch import Generator
-from pytorch_lightning.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
+from lightning.pytorch.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
 
 from torchvision import datasets, transforms
 
@@ -13,7 +14,7 @@ import argparse
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class LCCFASDataset(pl.LightningDataModule):
+class LCCFASDataset(LightningDataModule):
     def __init__(self, args: argparse.Namespace) -> None:
         self.train_path = args.train_path # args.datapaht="/kaggle/input/lcc-fasd"
         self.test_path = args.test_path

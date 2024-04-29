@@ -1,4 +1,4 @@
-import pytorch_lightning as pl
+from lightning.pytorch import LightningModule
 from typing import Literal
 from torch.optim import Adam
 import torch
@@ -7,7 +7,7 @@ from torchvision.models import resnext50_32x4d, ResNeXt50_32X4D_Weights
 from pytorch_lightning.utilities.model_summary import summarize
 
 
-class SEResNeXT50(pl.LightningModule):
+class SEResNeXT50(LightningModule):
     def __init__(self, input_shape, num_classes):
         super().__init__()
         self.input_shape = input_shape
@@ -22,17 +22,18 @@ class SEResNeXT50(pl.LightningModule):
 
         print(in_feat, ">>>>")
 
-        self.backbone.fc = nn.Dropout(p=0.5)
+        self.backbone.fc = nn.Linear(in_features=in_feat, out_features=512)
+        self.dropout = nn.Dropout(p=0.5)
 
-        self.classifier = nn.Sequential(
-            nn.Linear(in_features=in_feat,
-                      out_features=512),
-            nn.Dropout(p=0.5),
-            nn.Linear(in_features=512, out_features=num_classes)
-        )
+        self.classifier = nn.Linear(in_features=512, out_features=num_classes)
+
+        print(self.backbone)
+
 
     def forward(self, x):
         out = self.backbone(x)
+        out = self.backbone.fc(out)
+        out = self.dropout(out)
         out = self.classifier(out)
         return out
     
