@@ -18,10 +18,10 @@ class SEResNeXT50(LightningModule):
         self.recall = Recall(task="multiclass", num_classes=num_classes)
         self.f1score = F1Score(task="multiclass", num_classes=num_classes)
 
-        self.backbone = resnext50_32x4d(weights=ResNeXt50_32X4D_Weights.IMAGENET1K_V2)
+        self.backbone = resnext50_32x4d()
         
-        for param in self.backbone.parameters():
-            param.requires_grad = False
+        # for param in self.backbone.parameters():
+        #     param.requires_grad = False
 
         in_features = self.backbone.fc.in_features
 
