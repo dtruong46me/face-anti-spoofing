@@ -55,9 +55,9 @@ def training_pipeline(args: argparse.Namespace):
     logger = WandbLogger(name="face-anti-spoof", project="cv-project")
 
     # Load callbacks
-    # es_callback = EarlyStopping(monitor="val_loss", min_delta=0.00, patience=3, verbose=False, mode="max")
+    es_callback = EarlyStopping(monitor="accuracy", min_delta=0.00, patience=4, verbose=False, mode="max")
     # tqdm_callback = MyProgressBar()
-    # callbacks = [es_callback, tqdm_callback]
+    callbacks = [es_callback]
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs, 

@@ -20,8 +20,8 @@ class SEResNeXT50(LightningModule):
 
         self.backbone = resnext50_32x4d(weights=ResNeXt50_32X4D_Weights.IMAGENET1K_V2)
         
-        # for param in self.backbone.parameters():
-        #     param.requires_grad = False
+        for param in self.backbone.parameters():
+            param.requires_grad = False
 
         in_features = self.backbone.fc.in_features
 
@@ -50,8 +50,10 @@ class SEResNeXT50(LightningModule):
 
         self.accuracy(outputs, labels)
         self.f1score(outputs, labels)
+        self.precision(outputs, labels)
+        self.recall(outputs, labels)
 
-        self.log_dict(dictionary={"train_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score}, 
+        self.log_dict(dictionary={"train_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score, "precicion": self.precision, "recall": self.recall}, 
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
@@ -60,8 +62,10 @@ class SEResNeXT50(LightningModule):
 
         self.accuracy(outputs, labels)
         self.f1score(outputs, labels)
+        self.precision(outputs, labels)
+        self.recall(outputs, labels)
 
-        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score}, 
+        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score, "precision": self.precision, "recall": self.recall}, 
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
 
         return loss
