@@ -13,10 +13,10 @@ class SEResNeXT50(LightningModule):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
-        self.accuracy = Accuracy(task="multiclass", num_classes=num_classes)
-        self.precision = Precision(task="multiclass", num_classes=num_classes)
-        self.recall = Recall(task="multiclass", num_classes=num_classes)
-        self.f1score = F1Score(task="multiclass", num_classes=num_classes)
+        self.accuracy = Accuracy(task="binary", num_classes=num_classes)
+        self.precision = Precision(task="binary", num_classes=num_classes)
+        self.recall = Recall(task="binary", num_classes=num_classes)
+        self.f1score = F1Score(task="binary", num_classes=num_classes)
 
         self.backbone = resnext50_32x4d()
         
