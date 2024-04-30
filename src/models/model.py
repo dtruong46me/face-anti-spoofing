@@ -3,6 +3,7 @@ from typing import Literal
 from torch.optim import Adam
 import torch
 import torch.nn as nn
+from torchmetrics.classification import Accuracy, F1Score, Precision, Recall
 from torchvision.models import resnext50_32x4d, ResNeXt50_32X4D_Weights
 from pytorch_lightning.utilities.model_summary import summarize
 
@@ -12,11 +13,15 @@ class SEResNeXT50(LightningModule):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
+        self.accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.precision = Precision(task="multiclass", num_classes=num_classes)
+        self.recall = Recall(task="multiclass", num_classes=num_classes)
+        self.f1score = F1Score(task="multiclass", num_classes=num_classes)
 
         self.backbone = resnext50_32x4d(weights=ResNeXt50_32X4D_Weights.IMAGENET1K_V2)
         
-        for param in self.backbone.parameters():
-            param.requires_grad = False
+        # for param in self.backbone.parameters():
+        #     param.requires_grad = False
 
         in_features = self.backbone.fc.in_features
 
@@ -42,16 +47,23 @@ class SEResNeXT50(LightningModule):
     
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
-        # self.log_dict({"train_loss": loss}, 
-        #               on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log(name="train_loss", value=loss, prog_bar=True, logger=True, on_epoch=True, on_step=False)
+
+        self.accuracy(outputs, labels)
+        self.f1score(outputs, labels)
+
+        self.log_dict(dictionary={"train_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score}, 
+                      prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
-        # self.log_dict({"val_loss": loss}, 
-        #               on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log(name="val_loss", value=loss, prog_bar=True, logger=True, on_epoch=True, on_step=False)
+
+        self.accuracy(outputs, labels)
+        self.f1score(outputs, labels)
+
+        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score}, 
+                      prog_bar=True, logger=True, on_epoch=True, on_step=False)
+
         return loss
     
     def test_step(self, batch):
@@ -65,6 +77,9 @@ class SEResNeXT50(LightningModule):
         outputs = self.forward(images)
         loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
+    
+    def on_train_epoch_end(self) -> None:
+        self.log("train_acc_epoch", self.accuracy)
 
 
 def load_model(modelname: str, input_shape, num_classes):
