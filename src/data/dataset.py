@@ -7,8 +7,9 @@ from torch.utils.data import random_split, DataLoader
 from torch import Generator
 from lightning.pytorch.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
 
-import torch
 from torch.nn import functional as F
+
+from load_data import ingest_data
 
 from torchvision import datasets, transforms
 
@@ -53,19 +54,13 @@ class LCCFASDataset(LightningDataModule):
                                     std=[0.229, 0.224, 0.225])
             ])
 
-            logger.info(f"Loading image from {self.train_path}")
-            self.train = datasets.ImageFolder(self.train_path, transform=preprocess)
-            print(type(self.train))
+            self.train = ingest_data(self.train_path, transform=preprocess)
             print(self.train[0])
             print(len(self.train))
-            print("Classes of training dataset:", self.train.classes)
-            
-            logger.info(f"Loading image from {self.test_path}")
-            self.test = datasets.ImageFolder(self.test_path, transform=preprocess)
-            print("Class of test dataset:", self.test.class_to_idx)
+
+            self.test = ingest_data(self.test_path, transform=preprocess)
 
         except Exception as e:
-            logger.error(f"Error while loading image: {e}")
             raise e
 
     def setup(self, stage: str="fit") -> None:
@@ -75,10 +70,10 @@ class LCCFASDataset(LightningDataModule):
                 train_size = int(TRAIN_RATE*len(self.train))
                 val_size = len(self.train) - train_size
                 
-                logger.info(f"Splitting image with size: 70/30")
                 self.train, self.val = random_split(
                     self.train, lengths=[train_size, val_size], generator=Generator().manual_seed(42)
                 )
+
         except Exception as e:
             raise e
     
@@ -111,8 +106,8 @@ if __name__=='__main__':
     dataset = LCCFASDataset(args)
     dataset.prepare_data()
     dataset.setup()
-#     train_loader = dataset.train_dataloader()
-#     val_loader = dataset.val_dataloader()
+    train_loader = dataset.train_dataloader()
+    val_loader = dataset.val_dataloader()
 #     test_loader = dataset.test_dataloader()
 #     print(dataset.train)
 #     print(train_loader)
