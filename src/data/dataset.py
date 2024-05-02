@@ -55,7 +55,8 @@ class LCCFASDataset(LightningDataModule):
             ])
 
             self.train = ingest_data(self.train_path, transform=preprocess)
-            print(self.train[0])
+            print(self.train[1])
+            print(self.train[6600])
             print(len(self.train))
 
             self.test = ingest_data(self.test_path, transform=preprocess)
