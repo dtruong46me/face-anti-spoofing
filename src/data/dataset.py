@@ -55,11 +55,14 @@ class LCCFASDataset(LightningDataModule):
 
             logger.info(f"Loading image from {self.train_path}")
             self.train = datasets.ImageFolder(self.train_path, transform=preprocess)
+            print(type(self.train))
+            print(self.train[0])
+            print(len(self.train))
             print("Classes of training dataset:", self.train.classes)
             
             logger.info(f"Loading image from {self.test_path}")
             self.test = datasets.ImageFolder(self.test_path, transform=preprocess)
-            print("Class of test dataset:", self.test.class_to_idx, self.test.classes)
+            print("Class of test dataset:", self.test.class_to_idx)
 
         except Exception as e:
             logger.error(f"Error while loading image: {e}")
@@ -80,38 +83,13 @@ class LCCFASDataset(LightningDataModule):
             raise e
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
-        try:
-            return DataLoader(self.train, batch_size=self.batch_size, shuffle=True, num_workers=4)
-        
-        except Exception as e:
-            raise e
+        return DataLoader(self.train, batch_size=self.batch_size, shuffle=True, num_workers=4)
     
     def val_dataloader(self) -> EVAL_DATALOADERS:
-        try:
-            return DataLoader(self.val, batch_size=self.batch_size, shuffle=False, num_workers=4)
-        
-        except Exception as e:
-            raise e
+        return DataLoader(self.val, batch_size=self.batch_size, shuffle=False, num_workers=4)
     
     def test_dataloader(self) -> EVAL_DATALOADERS:
-        try:
-            return DataLoader(self.test, batch_size=self.batch_size, shuffle=False)
-        
-        except Exception as e:
-            raise e
-    
-    # def get_transform(self):
-    #     try:
-    #         preprocess = transforms.Compose([
-    #             transforms.Resize([224, 224]),
-    #             transforms.ToTensor(),
-    #             transforms.Normalize(mean=[0.485, 0.456, 0.406],
-    #                                 std=[0.229, 0.224, 0.225])
-    #         ])
-    #         return preprocess
-        
-    #     except Exception as e:
-    #         raise e
+        return DataLoader(self.test, batch_size=self.batch_size, shuffle=False)
         
 def load_data(args):
     try:
@@ -122,16 +100,16 @@ def load_data(args):
         logger.error(f"Error while loading data: {e}")
         raise e
     
-# if __name__=='__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
-#     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
-#     parser.add_argument("--batch_size", type=int, default=64)
-#     args = parser.parse_args()
+if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
+    parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
+    parser.add_argument("--batch_size", type=int, default=64)
+    args = parser.parse_args()
 
-#     dataset = LCCFASDataset(args)
-#     dataset.prepare_data()
-#     dataset.setup()
+    dataset = LCCFASDataset(args)
+    dataset.prepare_data()
+    dataset.setup()
 #     train_loader = dataset.train_dataloader()
 #     val_loader = dataset.val_dataloader()
 #     test_loader = dataset.test_dataloader()

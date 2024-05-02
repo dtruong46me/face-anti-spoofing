@@ -14,7 +14,7 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
 from models.model import load_model
-from data.load_dataset import load_data
+from data.dataset import load_data
 
 class MyProgressBar(TQDMProgressBar):
     def init_validation_tqdm(self):
