@@ -105,6 +105,7 @@ if __name__=='__main__':
     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
     parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
 
     dataset = LCCFASDataset(args)
