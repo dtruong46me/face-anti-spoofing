@@ -13,10 +13,15 @@ class SEResNeXT50(LightningModule):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
-        self.accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.precision = Precision(task="binary", num_classes=num_classes)
-        self.recall = Recall(task="binary", num_classes=num_classes)
-        self.f1score = F1Score(task="binary", num_classes=num_classes)
+        self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
+        self.train_precision = Precision(task="binary", num_classes=num_classes)
+        self.train_recall = Recall(task="binary", num_classes=num_classes)
+        self.train_f1score = F1Score(task="binary", num_classes=num_classes)
+
+        self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
+        self.val_precision = Precision(task="binary", num_classes=num_classes)
+        self.val_recall = Recall(task="binary", num_classes=num_classes)
+        self.val_f1score = F1Score(task="binary", num_classes=num_classes)
 
         self.backbone = resnext50_32x4d()
         
@@ -51,25 +56,25 @@ class SEResNeXT50(LightningModule):
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
-        self.accuracy(outputs, labels)
-        self.f1score(outputs, labels)
-        self.precision(outputs, labels)
-        self.recall(outputs, labels)
+        self.train_accuracy(outputs, labels)
+        self.train_f1score(outputs, labels)
+        self.train_precision(outputs, labels)
+        self.train_recall(outputs, labels)
 
-        self.log_dict(dictionary={"train_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score, "precicion": self.precision, "recall": self.recall}, 
+        self.log_dict(dictionary={"train_loss": loss, "accuracy": self.train_accuracy, "f1_score": self.train_f1score, "precicion": self.train_precision, "recall": self.train_recall}, 
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
-        self.accuracy(outputs, labels)
-        self.f1score(outputs, labels)
-        self.precision(outputs, labels)
-        self.recall(outputs, labels)
+        self.val_accuracy(outputs, labels)
+        self.val_f1score(outputs, labels)
+        self.val_precision(outputs, labels)
+        self.val_recall(outputs, labels)
 
-        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.accuracy, "f1_score": self.f1score, "precision": self.precision, "recall": self.recall}, 
-                      prog_bar=True, logger=True, on_epoch=True, on_step=False)
+        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.train_accuracy, "f1_score": self.train_f1score, "precision": self.train_precision, "recall": self.train_recall}, 
+                      prog_bar=False, logger=True, on_epoch=True, on_step=False)
 
         return loss
     
@@ -85,8 +90,11 @@ class SEResNeXT50(LightningModule):
         loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
     
-    def on_train_epoch_end(self) -> None:
-        self.log("train_acc_epoch", self.accuracy)
+    def on_test_epoch_end(self, outputs) -> None:
+        preds = torch.cat([x["preds"] for x in outputs])
+        labels = torch.cat([x["labels"] for x in outputs])
+        acc = Accuracy(preds, labels)
+        self.log("test_accuracy", acc, on_epoch=True)
 
 
 def load_model(modelname: str, input_shape, num_classes):
