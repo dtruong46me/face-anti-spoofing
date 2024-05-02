@@ -13,6 +13,9 @@ class SEResNeXT50(LightningModule):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
+
+        self.save_hyperparameters()
+
         self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
         self.train_precision = Precision(task="binary", num_classes=num_classes)
         self.train_recall = Recall(task="binary", num_classes=num_classes)
@@ -34,20 +37,20 @@ class SEResNeXT50(LightningModule):
         self.backbone.fc = nn.Identity()
 
         self.fc = nn.Linear(in_features=in_features, out_features=512)
-
-        self.dropout = nn.Dropout(p=0.5)
-
-        self.relu = nn.ReLU()
+        self.dropout1 = nn.Dropout(p=0.5)
+        self.relu1 = nn.ReLU()
 
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
-
+        self.relu2 = nn.ReLU()
 
     def forward(self, x):
+        x = x.view(x.size(0), -1)
         out = self.backbone(x)
         out = self.fc(out)
-        out = self.dropout(out)
-        out = self.relu(out)
+        out = self.dropout1(out)
+        out = self.relu1(out)
         out = self.classifier(out)
+        out = self.relu2(out)
         return out
     
     def configure_optimizers(self):
@@ -73,7 +76,7 @@ class SEResNeXT50(LightningModule):
         self.val_precision(outputs, labels)
         self.val_recall(outputs, labels)
 
-        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.train_accuracy, "f1_score": self.train_f1score, "precision": self.train_precision, "recall": self.train_recall}, 
+        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.val_accuracy, "f1_score": self.val_f1score, "precision": self.val_precision, "recall": self.val_recall}, 
                       prog_bar=False, logger=True, on_epoch=True, on_step=False)
 
         return loss
