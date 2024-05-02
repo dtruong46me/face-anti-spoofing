@@ -36,15 +36,20 @@ class SEResNeXT50(LightningModule):
         # Delete the last layer
         self.backbone.fc = nn.Identity()
 
-        self.fc = nn.Linear(in_features=in_features, out_features=512)
+        self.fc1 = nn.Linear(in_features=in_features, out_features=512)
         self.dropout1 = nn.Dropout(p=0.5)
 
-        self.classifier = nn.Linear(in_features=512, out_features=2)
+        self.fc2 = nn.Linear(in_features=512, out_features=2)
+        self.relu =nn.ReLU()
+
+        self.classifier = nn.Linear(in_features=num_classes, out_features=1)
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
-        out = self.fc(out)
+        out = self.fc1(out)
         out = self.dropout1(out)
+        out = self.fc2(out)
+        out = self.relu(out)
         out = self.classifier(out)
         return out
     

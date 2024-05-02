@@ -53,16 +53,12 @@ class LCCFASDataset(LightningDataModule):
                                     std=[0.229, 0.224, 0.225])
             ])
 
-            def one_hot_label(data):
-                image, label = data
-                return image, F.one_hot(torch.tensor(label), num_classes=self.num_classes)
-
             logger.info(f"Loading image from {self.train_path}")
-            self.train = datasets.ImageFolder(self.train_path, transform=preprocess, target_transform=one_hot_label)
+            self.train = datasets.ImageFolder(self.train_path, transform=preprocess)
             print("Classes of training dataset:", self.train.classes)
             
             logger.info(f"Loading image from {self.test_path}")
-            self.test = datasets.ImageFolder(self.test_path, transform=preprocess, target_transform=one_hot_label)
+            self.test = datasets.ImageFolder(self.test_path, transform=preprocess)
             print("Class of test dataset:", self.test.class_to_idx, self.test.classes)
 
         except Exception as e:
