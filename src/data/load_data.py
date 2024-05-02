@@ -18,7 +18,7 @@ class IngestData(Dataset):
         else:
             target = [1,0]
 
-        return (self.data[index], target)
+        return (self.data[index][0], target)
     
     
 def ingest_data(datapath: str, transform):
