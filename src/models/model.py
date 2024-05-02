@@ -38,19 +38,21 @@ class SEResNeXT50(LightningModule):
 
         self.fc = nn.Linear(in_features=in_features, out_features=512)
         self.dropout1 = nn.Dropout(p=0.5)
-        self.relu1 = nn.ReLU()
 
-        self.classifier = nn.Linear(in_features=512, out_features=num_classes)
-        self.relu2 = nn.ReLU()
+        self.classifier = nn.Linear(in_features=512, out_features=2)
 
-    def forward(self, x):
-        x = x.view(x.size(0), -1)
+    def forward(self, x: torch.Tensor):
+        print("before:", x.shape)
+        # x = x.view(x.size(0), -1)
+        # print("after:", x.size())
         out = self.backbone(x)
+        print(out.shape)
         out = self.fc(out)
+        print(out.shape)
         out = self.dropout1(out)
-        out = self.relu1(out)
+        print(out.shape)
         out = self.classifier(out)
-        out = self.relu2(out)
+        print(out.shape)
         return out
     
     def configure_optimizers(self):
@@ -112,9 +114,17 @@ def load_model(modelname: str, input_shape, num_classes):
     except Exception as e:
         raise e
     
-# if __name__=='__main__':
-#     model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
-#     print("++++++++++")
+if __name__=='__main__':
+    model = load_model("seresnext50", input_shape=(3, 224, 224), num_classes=2)
+    print("++++++++++")
 #     for name, param in model.named_parameters():
 #         print(name, param.size())
-#     print(summarize(model))
+    print(summarize(model))
+
+    x = torch.randn([8,3,224,224])
+    print(x.shape)
+    print(x.size())
+    
+    output = model.forward(x)
+    print(output.shape)
+    print(output)

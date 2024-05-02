@@ -7,6 +7,9 @@ from torch.utils.data import random_split, DataLoader
 from torch import Generator
 from lightning.pytorch.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
 
+import torch
+from torch.nn import functional as F
+
 from torchvision import datasets, transforms
 
 import argparse
@@ -49,14 +52,18 @@ class LCCFASDataset(LightningDataModule):
                                     std=[0.229, 0.224, 0.225])
             ])
 
+            def one_hot_label(data):
+                image, label = data
+                return image, F.one_hot(torch.tensor(label), num_classes=args.num_classes)
+
             logger.info(f"Loading image from {self.train_path}")
-            self.train = datasets.ImageFolder(self.train_path, transform=preprocess)
+            self.train = datasets.ImageFolder(self.train_path, transform=preprocess, target_transform=one_hot_label)
             print("Classes of training dataset:", self.train.classes)
             print(self.train[0])
             print(self.train[1])
             
             logger.info(f"Loading image from {self.test_path}")
-            self.test = datasets.ImageFolder(self.test_path, transform=preprocess)
+            self.test = datasets.ImageFolder(self.test_path, transform=preprocess, target_transform=one_hot_label)
             print("Class of test dataset:", self.test.class_to_idx, self.test.classes)
 
         except Exception as e:

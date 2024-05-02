@@ -17,7 +17,7 @@ class Backbone(torch.nn.Module):
 
     def forward(self, x):
         print("before x.shape=", x.shape)
-        x = x.view(x.size(0), -1)
+        # x = x.view(x.size(0), -1)
         print("after x.shape=", x.shape)
         x = torch.relu(self.l1(x))
         x = torch.relu(self.l2(x))
@@ -79,7 +79,7 @@ def cli_main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--hidden_dim', type=int, default=128)
 
-    parser = pl.Trainer.add_argparse_args(parser)
+    # parser = pl.Trainer.add_argparse_args(parser)
     parser = LitClassifier.add_model_specific_args(parser)
     args = parser.parse_args()
 
@@ -109,7 +109,7 @@ def cli_main():
     # ------------
     # training
     # ------------
-    trainer = pl.Trainer.from_argparse_args(args)
+    trainer = pl.Trainer()
     trainer.fit(model, train_loader, val_loader)
 
     # ------------
