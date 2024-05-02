@@ -5,7 +5,9 @@ import sys
 
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import WandbLogger
+from pytorch_lightning.utilities.model_summary import summarize
 from lightning.pytorch.callbacks import EarlyStopping, TQDMProgressBar
+
 import wandb
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -40,6 +42,7 @@ def training_pipeline(args: argparse.Namespace):
     data.setup()
     train_loader = data.train_dataloader()
     val_loader = data.val_dataloader()
+    # test_loader = data.test_dataloader()
 
     print("Complete load data")
 
@@ -50,6 +53,8 @@ def training_pipeline(args: argparse.Namespace):
     
     print("Complete load model")
 
+    summarize(model)
+
     # Load logger
     wandb.login(key='c74fcec22fbb4be075a981b1f3db3f464b15b089')
     logger = WandbLogger(name="face-anti-spoof", project="cv-project")
@@ -57,7 +62,7 @@ def training_pipeline(args: argparse.Namespace):
     # Load callbacks
     es_callback = EarlyStopping(monitor="accuracy", min_delta=0.00, patience=4, verbose=False, mode="max")
     # tqdm_callback = MyProgressBar()
-    callbacks = [es_callback]
+    print(es_callback)
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs, 

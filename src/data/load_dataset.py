@@ -19,6 +19,7 @@ class LCCFASDataset(LightningDataModule):
         self.train_path = args.train_path # args.datapaht="/kaggle/input/lcc-fasd"
         self.test_path = args.test_path
         self.batch_size = args.batch_size
+
         '''
         Trong đó cấu trúc thư mục của /kaggle/input/lcc-fasd/ như sau:
         /kaggle/input/lcc-fasd/
@@ -50,9 +51,13 @@ class LCCFASDataset(LightningDataModule):
 
             logger.info(f"Loading image from {self.train_path}")
             self.train = datasets.ImageFolder(self.train_path, transform=preprocess)
+            print("Classes of training dataset:", self.train.classes)
+            print(self.train[0])
+            print(self.train[1])
             
             logger.info(f"Loading image from {self.test_path}")
             self.test = datasets.ImageFolder(self.test_path, transform=preprocess)
+            print("Class of test dataset:", self.test.class_to_idx, self.test.classes)
 
         except Exception as e:
             logger.error(f"Error while loading image: {e}")
@@ -128,3 +133,7 @@ if __name__=='__main__':
     train_loader = dataset.train_dataloader()
     val_loader = dataset.val_dataloader()
     test_loader = dataset.test_dataloader()
+    print(dataset.train)
+    print(train_loader)
+    print(dataset.val_dataloader)
+    print(dataset.test_dataloader)

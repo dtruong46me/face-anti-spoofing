@@ -20,8 +20,8 @@ class SEResNeXT50(LightningModule):
 
         self.backbone = resnext50_32x4d()
         
-        # for param in self.backbone.parameters():
-        #     param.requires_grad = False
+        for param in self.backbone.parameters():
+            param.requires_grad = False
 
         in_features = self.backbone.fc.in_features
 
@@ -32,6 +32,8 @@ class SEResNeXT50(LightningModule):
 
         self.dropout = nn.Dropout(p=0.5)
 
+        self.relu = nn.ReLU()
+
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
 
 
@@ -39,6 +41,7 @@ class SEResNeXT50(LightningModule):
         out = self.backbone(x)
         out = self.fc(out)
         out = self.dropout(out)
+        out = self.relu(out)
         out = self.classifier(out)
         return out
     
@@ -92,7 +95,7 @@ def load_model(modelname: str, input_shape, num_classes):
         print(device)
         if modelname == "seresnext50":
             model = SEResNeXT50(input_shape, num_classes)
-            model.to(device)
+            # model.to(device)
             return model
         
     except Exception as e:
