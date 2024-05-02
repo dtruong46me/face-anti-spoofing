@@ -42,17 +42,10 @@ class SEResNeXT50(LightningModule):
         self.classifier = nn.Linear(in_features=512, out_features=2)
 
     def forward(self, x: torch.Tensor):
-        print("before:", x.shape)
-        # x = x.view(x.size(0), -1)
-        # print("after:", x.size())
         out = self.backbone(x)
-        print(out.shape)
         out = self.fc(out)
-        print(out.shape)
         out = self.dropout1(out)
-        print(out.shape)
         out = self.classifier(out)
-        print(out.shape)
         return out
     
     def configure_optimizers(self):
