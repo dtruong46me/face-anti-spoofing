@@ -35,10 +35,11 @@ def training_pipeline(args: argparse.Namespace):
     logger = WandbLogger(name="face-anti-spoof", project="cv-project")
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="accuracy", min_delta=0.00, patience=4, verbose=False, mode="max")
+    es_callback = EarlyStopping(monitor="val/accuracy", min_delta=0.00, patience=4, verbose=False, mode="max")
 
     # Load trainer
-    trainer = Trainer(max_epochs=args.max_epochs, 
+    trainer = Trainer(max_epochs=args.max_epochs,
+                      callbacks=[es_callback],
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)

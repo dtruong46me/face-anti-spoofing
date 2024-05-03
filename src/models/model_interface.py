@@ -73,7 +73,7 @@ class SEResNeXT50(LightningModule):
         self.val_accuracy(outputs, labels)
         self.val_f1score(outputs, labels)
 
-        self.log_dict(dictionary={"val_loss": loss, "accuracy": self.val_accuracy, "f1_score": self.val_f1score}, 
+        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/f1_score": self.val_f1score}, 
                       prog_bar=False, logger=True, on_epoch=True, on_step=False)
 
         return loss
