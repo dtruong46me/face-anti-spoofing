@@ -16,7 +16,7 @@ import argparse
 
 path = os.path.abspath(os.path.dirname(__name__))
 sys.path.insert(0, path)
-from load_data import ingest_data
+from data.load_data import ingest_data
 
 class LCCFASDataset(LightningDataModule):
     def __init__(self, args: argparse.Namespace) -> None:
