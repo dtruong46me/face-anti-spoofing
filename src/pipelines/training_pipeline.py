@@ -13,18 +13,16 @@ import wandb
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from models.model import load_model
-from data.dataset import load_data
+from models.model_interface import load_model
+from data.dataset import load_data, load_dataloader
 
 
 def training_pipeline(args: argparse.Namespace):
     # Load dataset
     data = load_data(args)
-    data.prepare_data()
-    data.setup()
-    train_loader = data.train_dataloader()
-    val_loader = data.val_dataloader()
-    # test_loader = data.test_dataloader()
+
+    # Load dataloader
+    train_loader, val_loader, test_loader = load_dataloader(data)
 
     # Load model
     model = load_model(modelname=args.modelname, 

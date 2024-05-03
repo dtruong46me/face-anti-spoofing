@@ -92,22 +92,15 @@ def load_data(args):
     except Exception as e:
         raise e
     
-# if __name__=='__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
-#     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
-#     parser.add_argument("--batch_size", type=int, default=64)
-#     parser.add_argument("--num_classes", type=int, default=2)
-#     args = parser.parse_args()
+def load_dataloader(dataset: LCCFASDataset):
+    try:
+        dataset.prepare_data()
+        dataset.setup()
+        train_loader = dataset.train_dataloader()
+        val_loader = dataset.train_dataloader()
+        test_loader = dataset.train_dataloader()
 
-#     dataset = LCCFASDataset(args)
-#     dataset.prepare_data()
-#     dataset.setup()
-#     train_loader = dataset.train_dataloader()
-#     val_loader = dataset.val_dataloader()
+        return train_loader, val_loader, test_loader
 
-#     test_loader = dataset.test_dataloader()
-#     print(dataset.train)
-#     print(train_loader)
-#     print(dataset.val_dataloader)
-#     print(dataset.test_dataloader)
+    except Exception as e:
+        raise e
