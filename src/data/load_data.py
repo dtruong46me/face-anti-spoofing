@@ -14,9 +14,9 @@ class IngestData(Dataset):
     
     def __getitem__(self, index):
         if self.data[index][1]==0:
-            target = [0, 1]
+            target = Tensor([0, 1])
         else:
-            target = [1,0]
+            target = Tensor([1,0])
 
         return (self.data[index][0], target)
     
