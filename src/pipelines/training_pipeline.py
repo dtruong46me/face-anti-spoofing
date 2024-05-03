@@ -38,22 +38,17 @@ class MyProgressBar(TQDMProgressBar):
 def training_pipeline(args: argparse.Namespace):
     # Load dataset
     data = load_data(args)
-    data.prepare_data()
-    data.setup()
-    train_loader = data.train_dataloader()
-    val_loader = data.val_dataloader()
+    # data.prepare_data()
+    # data.setup()
+    # train_loader = data.train_dataloader()
+    # val_loader = data.val_dataloader()
     # test_loader = data.test_dataloader()
-
-    print("Complete load data")
 
     # Load model
     model = load_model(modelname=args.modelname, 
                        input_shape=args.input_shape, 
                        num_classes=args.num_classes)
     
-    print("Complete load model")
-
-    summarize(model)
 
     # Load logger
     wandb.login(key='c74fcec22fbb4be075a981b1f3db3f464b15b089')
@@ -61,20 +56,12 @@ def training_pipeline(args: argparse.Namespace):
 
     # Load callbacks
     es_callback = EarlyStopping(monitor="accuracy", min_delta=0.00, patience=4, verbose=False, mode="max")
-    # tqdm_callback = MyProgressBar()
-    print(es_callback)
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs, 
                       logger=logger)
     
-    trainer.fit(model, train_loader, val_loader)
-
-    print("Complete training")
-    
-    model.on_save_checkpoint("first_model.ckpt")
-    model.on_save_checkpoint("checkpoint_model.pth")
-    print("Complete save checkpoint")
+    trainer.fit(model, data)
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()

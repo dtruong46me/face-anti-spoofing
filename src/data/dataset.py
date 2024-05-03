@@ -1,5 +1,6 @@
 
-import logging
+import os
+import sys
 
 from lightning.pytorch import LightningDataModule
 
@@ -9,14 +10,13 @@ from lightning.pytorch.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADER
 
 from torch.nn import functional as F
 
-from load_data import ingest_data
-
 from torchvision import datasets, transforms
 
 import argparse
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+path = os.path.abspath(os.path.dirname(__name__))
+sys.path.insert(0, path)
+from load_data import ingest_data
 
 class LCCFASDataset(LightningDataModule):
     def __init__(self, args: argparse.Namespace) -> None:
@@ -55,9 +55,6 @@ class LCCFASDataset(LightningDataModule):
             ])
 
             self.train = ingest_data(self.train_path, transform=preprocess)
-            print(self.train[1])
-            print(self.train[6600])
-            print(len(self.train))
 
             self.test = ingest_data(self.test_path, transform=preprocess)
 
@@ -93,25 +90,22 @@ def load_data(args):
         return dataset
     
     except Exception as e:
-        logger.error(f"Error while loading data: {e}")
         raise e
     
-if __name__=='__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
-    parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
-    parser.add_argument("--batch_size", type=int, default=64)
-    parser.add_argument("--num_classes", type=int, default=2)
-    args = parser.parse_args()
+# if __name__=='__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
+#     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
+#     parser.add_argument("--batch_size", type=int, default=64)
+#     parser.add_argument("--num_classes", type=int, default=2)
+#     args = parser.parse_args()
 
-    dataset = LCCFASDataset(args)
-    dataset.prepare_data()
-    dataset.setup()
-    train_loader = dataset.train_dataloader()
-    print(train_loader)
-    val_loader = dataset.val_dataloader()
-    print(val_loader)
-    print(train_loader[0])
+#     dataset = LCCFASDataset(args)
+#     dataset.prepare_data()
+#     dataset.setup()
+#     train_loader = dataset.train_dataloader()
+#     val_loader = dataset.val_dataloader()
+
 #     test_loader = dataset.test_dataloader()
 #     print(dataset.train)
 #     print(train_loader)
