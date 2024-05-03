@@ -13,12 +13,12 @@ class IngestData(Dataset):
         return len(self.data)
     
     def __getitem__(self, index):
-        # if self.data[index][1]==0:
-        #     target = Tensor([0, 1])
-        # else:
-        #     target = Tensor([1,0])
+        if self.data[index][1]==0:
+            target = Tensor([0, 1])
+        else:
+            target = Tensor([1,0])
 
-        return (self.data[index][0], self.data[index][1])
+        return (self.data[index][0], target)
     
     
 def ingest_data(datapath: str, transform):
