@@ -16,32 +16,14 @@ sys.path.insert(0, path)
 from models.model import load_model
 from data.dataset import load_data
 
-class MyProgressBar(TQDMProgressBar):
-    def init_validation_tqdm(self):
-        bar = super().init_validation_tqdm()
-        if not sys.stdout.isatty():
-            bar.disable = True
-        return bar
-
-    def init_predict_tqdm(self):
-        bar = super().init_predict_tqdm()
-        if not sys.stdout.isatty():
-            bar.disable = True
-        return bar
-
-    def init_test_tqdm(self):
-        bar = super().init_test_tqdm()
-        if not sys.stdout.isatty():
-            bar.disable = True
-        return bar
 
 def training_pipeline(args: argparse.Namespace):
     # Load dataset
     data = load_data(args)
-    # data.prepare_data()
-    # data.setup()
-    # train_loader = data.train_dataloader()
-    # val_loader = data.val_dataloader()
+    data.prepare_data()
+    data.setup()
+    train_loader = data.train_dataloader()
+    val_loader = data.val_dataloader()
     # test_loader = data.test_dataloader()
 
     # Load model
@@ -61,7 +43,7 @@ def training_pipeline(args: argparse.Namespace):
     trainer = Trainer(max_epochs=args.max_epochs, 
                       logger=logger)
     
-    trainer.fit(model, data)
+    trainer.fit(model, train_loader, val_loader)
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
