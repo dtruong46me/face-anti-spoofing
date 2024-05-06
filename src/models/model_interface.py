@@ -89,7 +89,6 @@ class SEResNeXT50(LightningModule):
         images, labels = batch
         print(">>> labels:", labels, labels.shape)
         print(images.shape)
-        print(batch.shape)
         outputs = self.forward(images)
         print(">>> outputs", outputs, outputs.shape)
         print("========")
