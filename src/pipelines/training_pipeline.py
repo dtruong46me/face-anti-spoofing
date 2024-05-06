@@ -5,8 +5,8 @@ import sys
 
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import WandbLogger
-from lightning.pytorch.utilities.model_summary import summarize
-from lightning.pytorch.callbacks import EarlyStopping, TQDMProgressBar
+from lightning.pytorch.callbacks import EarlyStopping
+import torch
 
 import wandb
 
@@ -24,10 +24,15 @@ def training_pipeline(args: argparse.Namespace):
     # Load dataloader
     train_loader, val_loader, _ = load_dataloader(data)
 
+    # Load device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(" > Device map:", device)
+
     # Load model
     model = load_model(modelname=args.modelname, 
                        input_shape=args.input_shape, 
                        num_classes=args.num_classes)
+    model.to(device)
     
 
     # Load logger

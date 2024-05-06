@@ -12,8 +12,6 @@ class SEResNeXT50(LightningModule):
         self.input_shape = input_shape
         self.num_classes = num_classes
 
-        self.save_hyperparameters()
-
         self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
         self.train_precision = Precision(task="binary", num_classes=num_classes)
         self.train_recall = Recall(task="binary", num_classes=num_classes)
