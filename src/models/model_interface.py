@@ -44,11 +44,14 @@ class SEResNeXT50(LightningModule):
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
-        # out = out.view(out.size(0), -1)
+        out = out.view(out.size(0), -1)
         out = self.fc1(out)
         out = self.relu(out)
         out = self.dropout1(out)
         out = self.classifier(out)
+        # probs = torch.nn.functional.softmax(out, dim=1)
+        # # Convert logits to predicted labels with a threshold (e.g., 0.5)
+        # predictions = torch.argmax(probs, dim=1)
         return out
     
     def configure_optimizers(self):
