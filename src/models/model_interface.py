@@ -40,8 +40,8 @@ class SEResNeXT50(LightningModule):
         self.dropout1 = nn.Dropout(p=0.5)
 
         # Classifier
-        self.classifier = nn.Linear(in_features=512, out_features=1)
-        self.softmax = nn.Softmax()
+        self.classifier = nn.Linear(in_features=512, out_features=num_classes)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
@@ -50,7 +50,7 @@ class SEResNeXT50(LightningModule):
         out = self.relu(out)
         out = self.dropout1(out)
         out = self.classifier(out)
-        out = self.softmax(out)
+        out = self.sigmoid(out)
         return out
     
     def configure_optimizers(self):
