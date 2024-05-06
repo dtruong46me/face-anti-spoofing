@@ -44,7 +44,7 @@ class SEResNeXT50(LightningModule):
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
-        out = out.view(out.size(0), -1)
+        # out = out.view(out.size(0), -1)
         out = self.fc1(out)
         out = self.relu(out)
         out = self.dropout1(out)
