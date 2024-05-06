@@ -92,7 +92,7 @@ class SEResNeXT50(LightningModule):
         outputs = self.forward(images)
         print(">>> outputs", outputs, outputs.shape)
         print("========")
-        loss = nn.CrossEntropyLoss()(outputs, labels)
+        loss = nn.BCELoss()(outputs, labels)
         return loss, outputs, labels
     
     def on_test_epoch_end(self, outputs) -> None:
