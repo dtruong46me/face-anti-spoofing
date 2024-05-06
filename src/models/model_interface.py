@@ -14,8 +14,8 @@ class SEResNeXT50(LightningModule):
 
         self.save_hyperparameters()
 
-        self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
-        self.train_precision = Precision(task="multiclass", num_classes=num_classes)
+        self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
+        self.train_precision = Precision(task="binary", num_classes=num_classes)
         self.train_recall = Recall(task="multiclass", num_classes=num_classes)
         self.train_f1score = F1Score(task="multiclass", num_classes=num_classes)
 
@@ -40,7 +40,8 @@ class SEResNeXT50(LightningModule):
         self.dropout1 = nn.Dropout(p=0.5)
 
         # Classifier
-        self.classifier = nn.Linear(in_features=512, out_features=num_classes)
+        self.classifier = nn.Linear(in_features=512, out_features=1)
+        self.softmax = nn.Softmax()
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
@@ -49,9 +50,7 @@ class SEResNeXT50(LightningModule):
         out = self.relu(out)
         out = self.dropout1(out)
         out = self.classifier(out)
-        # probs = torch.nn.functional.softmax(out, dim=1)
-        # # Convert logits to predicted labels with a threshold (e.g., 0.5)
-        # predictions = torch.argmax(probs, dim=1)
+        out = self.softmax(out)
         return out
     
     def configure_optimizers(self):
