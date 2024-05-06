@@ -39,7 +39,7 @@ class SEResNeXT50(LightningModule):
 
         # Classifier
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
-        # self.sigmoid = nn.Sigmoid()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor):
         print(x.shape)
@@ -50,7 +50,7 @@ class SEResNeXT50(LightningModule):
         out = self.dropout1(out)
         out = self.classifier(out)
         print(">>> out:", out, out.shape)
-        # out = self.sigmoid(out)
+        out = self.sigmoid(out)
         return out
     
     def configure_optimizers(self):
@@ -92,7 +92,7 @@ class SEResNeXT50(LightningModule):
         outputs = self.forward(images)
         print(">>> outputs", outputs, outputs.shape)
         print("========")
-        loss = nn.BCELoss()(outputs, labels)
+        loss = nn.BCEWithLogitsLoss()(outputs, labels)
         return loss, outputs, labels
     
     def on_test_epoch_end(self, outputs) -> None:
