@@ -87,9 +87,11 @@ class SEResNeXT50(LightningModule):
     
     def _common_step(self, batch, batch_idx):
         images, labels = batch
+        labels = labels.unsqueeze(1).float()
         print(">>> labels:", labels, labels.shape)
         print(images.shape)
         outputs = self.forward(images)
+        outputs = outputs.squeeze(1)
         print(">>> outputs", outputs, outputs.shape)
         print("========")
         loss = nn.BCELoss()(outputs, labels)
