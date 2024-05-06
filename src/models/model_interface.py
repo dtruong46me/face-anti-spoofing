@@ -49,7 +49,6 @@ class SEResNeXT50(LightningModule):
         out = self.relu(out)
         out = self.dropout1(out)
         out = self.classifier(out)
-        print(">>> out:", out, out.shape)
         out = self.sigmoid(out)
         return out
     
@@ -91,7 +90,6 @@ class SEResNeXT50(LightningModule):
         print(">>> labels:", labels, labels.shape)
         print(images.shape)
         outputs = self.forward(images)
-        outputs = outputs.squeeze(1)
         print(">>> outputs", outputs, outputs.shape)
         print("========")
         loss = nn.BCELoss()(outputs, labels)
