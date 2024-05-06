@@ -76,12 +76,15 @@ class LCCFASDataset(LightningDataModule):
             raise e
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
+        print(" > train_dataloader()")
         return DataLoader(self.train, batch_size=self.batch_size, shuffle=True, num_workers=4)
     
     def val_dataloader(self) -> EVAL_DATALOADERS:
+        print(" > val_dataloader()")
         return DataLoader(self.val, batch_size=self.batch_size, shuffle=False, num_workers=4)
     
     def test_dataloader(self) -> EVAL_DATALOADERS:
+        print(" > test_dataloader()")
         return DataLoader(self.test, batch_size=self.batch_size, shuffle=False)
         
 def load_data(args):
@@ -97,8 +100,8 @@ def load_dataloader(dataset: LCCFASDataset):
         dataset.prepare_data()
         dataset.setup()
         train_loader = dataset.train_dataloader()
-        val_loader = dataset.train_dataloader()
-        test_loader = dataset.train_dataloader()
+        val_loader = dataset.val_dataloader()
+        test_loader = dataset.test_dataloader()
 
         return train_loader, val_loader, test_loader
 

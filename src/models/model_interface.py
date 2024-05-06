@@ -39,7 +39,7 @@ class SEResNeXT50(LightningModule):
 
         # Classifier
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
@@ -48,7 +48,8 @@ class SEResNeXT50(LightningModule):
         out = self.relu(out)
         out = self.dropout1(out)
         out = self.classifier(out)
-        out = self.sigmoid(out)
+        print(">>> out:", out)
+        # out = self.sigmoid(out)
         return out
     
     def configure_optimizers(self):
@@ -100,6 +101,7 @@ def load_model(modelname: str, input_shape, num_classes):
     try:
         # Load SEResNeXT50
         if modelname == "seresnext50":
+            print(" > Loading model SE-ResNeXT-50")
             model = SEResNeXT50(input_shape, num_classes)
             return model
         

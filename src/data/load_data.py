@@ -13,12 +13,9 @@ class IngestData(Dataset):
         return len(self.data)
     
     def __getitem__(self, index):
-        if self.data[index][1]==0:
-            target = tensor(0)
-        else:
-            target = tensor(1)
-
-        return (self.data[index][0], target)
+        image, label = self.data[index]
+        target = tensor(1) if label != 0 else tensor(0)
+        return (image, target)
     
     
 def ingest_data(datapath: str, transform):
