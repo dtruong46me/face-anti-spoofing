@@ -1,2 +1,2 @@
-lightning
-streamlit
+lightning==2.2.3
+wandb==0.15.12

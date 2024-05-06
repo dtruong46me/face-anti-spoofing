@@ -36,20 +36,19 @@ class SEResNeXT50(LightningModule):
 
         # Linear 1
         self.fc1 = nn.Linear(in_features=in_features, out_features=512)
-        self.dropout1 = nn.Dropout(p=0.5)
         self.relu =nn.ReLU()
+        self.dropout1 = nn.Dropout(p=0.5)
 
         # Classifier
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
-        self.softmax = nn.Softmax()
 
     def forward(self, x: torch.Tensor):
         out = self.backbone(x)
+        out = out.view(out.size(0), -1)
         out = self.fc1(out)
-        out = self.dropout1(out)
         out = self.relu(out)
+        out = self.dropout1(out)
         out = self.classifier(out)
-        out = self.softmax(out)
         return out
     
     def configure_optimizers(self):

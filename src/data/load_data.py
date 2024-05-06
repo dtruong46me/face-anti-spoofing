@@ -23,7 +23,10 @@ class IngestData(Dataset):
     
 def ingest_data(datapath: str, transform):
     try:
-        return IngestData(datapath, transform)
+        print("Ingesting data from:", datapath)
+        ingested_data = IngestData(datapath, transform)
+        print(type(ingested_data.data))
+        return ingested_data
     
     except Exception as e:
         raise e

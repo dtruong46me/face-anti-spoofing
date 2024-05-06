@@ -5,7 +5,7 @@ import sys
 
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import WandbLogger
-from pytorch_lightning.utilities.model_summary import summarize
+from lightning.pytorch.utilities.model_summary import summarize
 from lightning.pytorch.callbacks import EarlyStopping, TQDMProgressBar
 
 import wandb
@@ -22,7 +22,7 @@ def training_pipeline(args: argparse.Namespace):
     data = load_data(args)
 
     # Load dataloader
-    train_loader, val_loader, test_loader = load_dataloader(data)
+    train_loader, val_loader, _ = load_dataloader(data)
 
     # Load model
     model = load_model(modelname=args.modelname, 

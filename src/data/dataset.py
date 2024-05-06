@@ -8,9 +8,7 @@ from torch.utils.data import random_split, DataLoader
 from torch import Generator
 from lightning.pytorch.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
 
-from torch.nn import functional as F
-
-from torchvision import datasets, transforms
+from torchvision import transforms
 
 import argparse
 
@@ -55,8 +53,10 @@ class LCCFASDataset(LightningDataModule):
             ])
 
             self.train = ingest_data(self.train_path, transform=preprocess)
+            print("Load training data:", self.train)
 
             self.test = ingest_data(self.test_path, transform=preprocess)
+            print("Load test data:", self.test)
 
         except Exception as e:
             raise e
