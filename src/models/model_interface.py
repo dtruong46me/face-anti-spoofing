@@ -16,11 +16,11 @@ class SEResNeXT50(LightningModule):
 
         self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
         self.train_precision = Precision(task="binary", num_classes=num_classes)
-        self.train_recall = Recall(task="multiclass", num_classes=num_classes)
-        self.train_f1score = F1Score(task="multiclass", num_classes=num_classes)
+        self.train_recall = Recall(task="binary", num_classes=num_classes)
+        self.train_f1score = F1Score(task="binary", num_classes=num_classes)
 
-        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
-        self.val_f1score = F1Score(task="multiclass", num_classes=num_classes)
+        self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
+        self.val_f1score = F1Score(task="binary", num_classes=num_classes)
 
         # Clone model backbone ResNeXT50
         self.backbone = resnext50_32x4d(weights=ResNeXt50_32X4D_Weights.IMAGENET1K_V2)
