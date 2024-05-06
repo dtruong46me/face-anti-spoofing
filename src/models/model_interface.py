@@ -42,13 +42,14 @@ class SEResNeXT50(LightningModule):
         # self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor):
+        print(x.shape)
         out = self.backbone(x)
         out = out.view(out.size(0), -1)
         out = self.fc1(out)
         out = self.relu(out)
         out = self.dropout1(out)
         out = self.classifier(out)
-        print(">>> out:", out)
+        print(">>> out:", out, out.shape)
         # out = self.sigmoid(out)
         return out
     
@@ -86,7 +87,12 @@ class SEResNeXT50(LightningModule):
     
     def _common_step(self, batch, batch_idx):
         images, labels = batch
+        print(">>> labels:", labels, labels.shape)
+        print(images.shape)
+        print(batch.shape)
         outputs = self.forward(images)
+        print(">>> outputs", outputs, outputs.shape)
+        print("========")
         loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
     
