@@ -11,7 +11,7 @@ class APCER(Metric):
         self.add_state("total_attack_error", default=torch.tensor(0), dist_reduce_fx="sum")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):
-        preds, target = self._input_format(preds, target)
+        # preds, target = self._input_format(preds, target)
 
         if preds.shape != target.shape:
             raise ValueError("preds and target must have the same shape")
