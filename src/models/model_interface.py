@@ -1,3 +1,5 @@
+import os, sys
+
 from lightning.pytorch import LightningModule
 
 from torch.optim import Adam
@@ -6,6 +8,11 @@ import torch.nn as nn
 from torchmetrics.classification import Accuracy, F1Score, Precision, Recall
 from torchvision.models import resnext50_32x4d, ResNeXt50_32X4D_Weights
 
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, path)
+
+from metrics.apcer import APCER
+
 class SEResNeXT50(LightningModule):
     def __init__(self, input_shape, num_classes):
         super().__init__()
@@ -13,12 +20,13 @@ class SEResNeXT50(LightningModule):
         self.num_classes = num_classes
 
         self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.train_precision = Precision(task="binary", num_classes=num_classes)
         self.train_recall = Recall(task="binary", num_classes=num_classes)
-        self.train_f1score = F1Score(task="binary", num_classes=num_classes)
+        self.train_apcer = APCER()
+        
 
         self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.val_f1score = F1Score(task="binary", num_classes=num_classes)
+        self.val_recall = Recall(task="binary", num_classes=num_classes)
+        self.val_apcer = APCER()
 
         # Clone model backbone ResNeXT50
         self.backbone = resnext50_32x4d(weights=ResNeXt50_32X4D_Weights.IMAGENET1K_V2)
@@ -42,7 +50,6 @@ class SEResNeXT50(LightningModule):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor):
-        print(x.shape)
         out = self.backbone(x)
         out = out.view(out.size(0), -1)
         out = self.fc1(out)
@@ -59,9 +66,8 @@ class SEResNeXT50(LightningModule):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
         self.train_accuracy(outputs, labels)
-        self.train_f1score(outputs, labels)
-        self.train_precision(outputs, labels)
         self.train_recall(outputs, labels)
+        self.train_apcer(outputs, labels)
 
         self.log_dict(dictionary={"train/loss": loss, "train/accuracy": self.train_accuracy, "train/f1_score": self.train_f1score, "train/precicion": self.train_precision, "train/recall": self.train_recall}, 
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
@@ -71,7 +77,8 @@ class SEResNeXT50(LightningModule):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
         self.val_accuracy(outputs, labels)
-        self.val_f1score(outputs, labels)
+        self.val_recall(outputs, labels)
+        self.val_apcer(outputs, labels)
 
         self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/f1_score": self.val_f1score}, 
                       prog_bar=False, logger=True, on_epoch=True, on_step=False)
@@ -87,11 +94,8 @@ class SEResNeXT50(LightningModule):
     def _common_step(self, batch, batch_idx):
         images, labels = batch
         labels = labels.unsqueeze(1).float()
-        print(">>> labels:", labels, labels.shape)
-        print(images.shape)
+
         outputs = self.forward(images)
-        print(">>> outputs", outputs, outputs.shape)
-        print("========")
         loss = nn.BCELoss()(outputs, labels)
         return loss, outputs, labels
     
