@@ -12,7 +12,7 @@ class APCER(Metric):
         if preds.shape != target.shape:
             raise ValueError("preds and target must have the same shape")
         
-        attack_mask = target == 1
+        attack_mask = (target == 1).float()
         self.total_attack_samples += torch.sum(attack_mask)
         self.total_attack_error += torch.sum((preds!=target)*attack_mask)
 

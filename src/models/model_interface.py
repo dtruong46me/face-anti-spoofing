@@ -12,6 +12,7 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
 from metrics.apcer import APCER
+from metrics.npcer import NPCER
 
 class SEResNeXT50(LightningModule):
     def __init__(self, input_shape, num_classes):
