@@ -11,7 +11,7 @@ from torchvision.models import resnext50_32x4d, ResNeXt50_32X4D_Weights
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from metrics.apcer import APCER
+from metrics.apcer import APCER, MyAccuracy
 from metrics.npcer import NPCER
 
 class SEResNeXT50(LightningModule):
@@ -21,6 +21,7 @@ class SEResNeXT50(LightningModule):
         self.num_classes = num_classes
 
         self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
+        self.train_acc2 = MyAccuracy()
         self.train_recall = Recall(task="binary", num_classes=num_classes)
         self.train_apcer = APCER()
         
@@ -67,10 +68,11 @@ class SEResNeXT50(LightningModule):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
         self.train_accuracy(outputs, labels)
+        self.train_acc2(outputs, labels)
         self.train_recall(outputs, labels)
-        self.train_apcer(outputs, labels)
+        # self.train_apcer(outputs, labels)
 
-        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": self.train_accuracy, "train/recall": self.train_recall, "train/apcer": self.train_apcer},
+        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": self.train_accuracy, "train/recall": self.train_recall, "train/apcer": self.train_acc2},
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
@@ -79,9 +81,9 @@ class SEResNeXT50(LightningModule):
 
         self.val_accuracy(outputs, labels)
         self.val_recall(outputs, labels)
-        self.val_apcer(outputs, labels)
+        # self.val_apcer(outputs, labels)
 
-        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/recall": self.val_recall, "val/apcer": self.val_apcer}, 
+        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/recall": self.val_recall}, 
                       prog_bar=False, logger=True, on_epoch=True, on_step=False)
 
         return loss
