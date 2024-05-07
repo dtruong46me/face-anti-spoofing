@@ -69,7 +69,7 @@ class SEResNeXT50(LightningModule):
         self.train_recall(outputs, labels)
         self.train_apcer(outputs, labels)
 
-        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": self.train_accuracy, "train/f1_score": self.train_f1score, "train/precicion": self.train_precision, "train/recall": self.train_recall}, 
+        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": self.train_accuracy, "train/recall": self.train_recall, "train/apcer": self.train_apcer},
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
@@ -80,7 +80,7 @@ class SEResNeXT50(LightningModule):
         self.val_recall(outputs, labels)
         self.val_apcer(outputs, labels)
 
-        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/f1_score": self.val_f1score}, 
+        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/recall": self.val_recall, "val/apcer": self.val_apcer}, 
                       prog_bar=False, logger=True, on_epoch=True, on_step=False)
 
         return loss
