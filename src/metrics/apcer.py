@@ -10,29 +10,13 @@ class APCER(Metric):
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):        
         preds = torch.argmax(preds, dim=1)
+        target = torch.argmax(target, dim=1)
 
-        self.total_attack_sample += target.numel()
+        false_pos = torch.sum((preds==1) & (target==0))
+        true_neg = torch.sum((preds==0) & (preds==0))
 
+        self.total_attack_error += false_pos
+        self.total_attack_samples += (true_neg + false_pos)
     
     def compute(self):
-        total_attack_sample = torch.max(self.total_attack_samples, torch.tensor(1))
-        return self.total_attack_error.float() / total_attack_sample
-    
-
-class MyAccuracy(Metric):
-    def __init__(self):
-        super().__init__()
-        self.add_state("total", default=torch.tensor(0), dist_reduce_fx="sum")
-        self.add_state("correct", default=torch.tensor(0), dist_reduce_fx="sum")
-
-    def update(self, preds, target):
-        print(preds, preds.shape)
-        preds = torch.argmax(preds, dim=1)
-        print(preds)
-        print(target)
-
-        self.correct += torch.sum(preds==target)
-        self.total += target.numel()
-
-    def compute(self):
-        return self.correct.float() / self.total.float()
+        return self.total_attack_error.float() / self.total_attack_samples.float()

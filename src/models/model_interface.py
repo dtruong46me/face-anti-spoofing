@@ -34,11 +34,13 @@ class ModelInterface(LightningModule):
 
         self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
         self.train_recall = Recall(task="multiclass", num_classes=num_classes)
-        # self.train_apcer = APCER()
+        self.train_apcer = APCER()
+        self.train_npcer = NPCER()
         
         self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
         self.val_recall = Recall(task="multiclass", num_classes=num_classes)
-        # self.val_apcer = APCER()
+        self.val_apcer = APCER()
+        self.val_npcer = NPCER()
 
         self.backbone = model
 
@@ -52,22 +54,24 @@ class ModelInterface(LightningModule):
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
-        self.train_accuracy(outputs, labels)
-        self.train_recall(outputs, labels)
-        # self.train_apcer(outputs, labels)
+        acc = self.train_accuracy(outputs, labels)
+        rec = self.train_recall(outputs, labels)
+        apcer = self.train_apcer(outputs, labels)
+        npcer = self.train_npcer(outputs, labels)
 
-        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": self.train_accuracy, "train/recall": self.train_recall},
+        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": acc, "train/recall": rec, "train/apcer": apcer, "train/npcer": npcer},
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
     def validation_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
-        self.val_accuracy(outputs, labels)
-        self.val_recall(outputs, labels)
-        # self.val_apcer(outputs, labels)
+        acc = self.val_accuracy(outputs, labels)
+        rec = self.val_recall(outputs, labels)
+        apcer = self.val_apcer(outputs, labels)
+        npcer = self.val_npcer(outputs, labels)
 
-        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": self.val_accuracy, "val/recall": self.val_recall}, 
+        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": acc, "val/recall": rec, "val/apcer": apcer, "val/npcer": npcer}, 
                       prog_bar=False, logger=True, on_epoch=True, on_step=False)
 
         return loss
