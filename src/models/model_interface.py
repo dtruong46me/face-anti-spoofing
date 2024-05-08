@@ -80,10 +80,10 @@ class ModelInterface(LightningModule):
     
     def _common_step(self, batch, batch_idx):
         images, labels = batch
-        labels = labels.unsqueeze(0).float()
+        labels = labels.squeeze(0).float()
 
         outputs = self.forward(images)
-        loss = nn.BCELoss()(outputs, labels)
+        loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
     
 
