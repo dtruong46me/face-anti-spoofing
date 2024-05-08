@@ -53,7 +53,7 @@ def training_pipeline(args: argparse.Namespace):
     logger = WandbLogger(name="face-anti-spoof", project="cv-project")
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="val/accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
+    es_callback = EarlyStopping(monitor="val/apcer", min_delta=0.00, patience=4, verbose=True, mode="min")
 
     ckpt_callback = ModelCheckpoint(
         monitor='val/accuracy',
