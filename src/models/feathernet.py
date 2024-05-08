@@ -7,3 +7,8 @@
 /_/    \___/\__,_/\__/_/ /_/\___/_/  /_/ |_/\___/\__/
 
 """
+import torch.nn as nn
+
+class FeatherNet(nn.Module):
+    def __init__(self):
+        pass

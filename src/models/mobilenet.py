@@ -7,3 +7,8 @@
 /_/  /_/\____/_.___/_/_/\___/_/ |_/\___/\__/     |___//____/
 
 """
+import torch.nn as nn
+
+class MobileNetV2(nn.Module):
+    def __init__(self):
+        pass
