@@ -55,18 +55,19 @@ def training_pipeline(args: argparse.Namespace):
     # Load callbacks
     es_callback = EarlyStopping(monitor="val/apcer", min_delta=0.00, patience=4, verbose=True, mode="min")
 
+    ckpt_path = "../checkpoint"
     ckpt_callback = ModelCheckpoint(
-        monitor='val/accuracy',
         dirpath='checkpoint',
-        filename='sample',
-        save_top_k=3,
-        mode='max',
+        filename='cvproject',
+        save_top_k=2,
+        verbose=True,
+        mode='min',
+        monitor="val/apcer"
     )
 
     # Load trainer
-    trainer = Trainer(default_root_dir="model_ckpt", 
-                      max_epochs=args.max_epochs,
-                      callbacks=[es_callback],
+    trainer = Trainer(max_epochs=args.max_epochs,
+                      callbacks=[es_callback, ckpt_callback],
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)

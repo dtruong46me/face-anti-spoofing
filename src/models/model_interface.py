@@ -33,11 +33,11 @@ class ModelInterface(LightningModule):
         self.num_classes = num_classes
 
         self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.train_recall = Recall(task="multiclass", num_classes=num_classes)
+        self.train_recall = Recall(task="binary", num_classes=num_classes)
         self.train_apcer = APCER()
         self.train_npcer = NPCER()
         
-        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
         self.val_recall = Recall(task="binary", num_classes=num_classes)
         self.val_apcer = APCER()
         self.val_npcer = NPCER()
