@@ -5,7 +5,7 @@ import sys
 
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import WandbLogger
-from lightning.pytorch.callbacks import EarlyStopping
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 import torch
 
 import wandb
@@ -15,6 +15,16 @@ sys.path.insert(0, path)
 
 from models.model_interface import load_model
 from data.dataset import load_data, load_dataloader
+
+
+"""
+    ____        __                  __      __    _       __    __        _         
+   / __ \__  __/ /_____  __________/ /_    / /   (_)___ _/ /_  / /_____  (_)___  ____ _
+  / /_/ / / / / __/ __ \/ ___/ ___/ __ \  / /   / / __ `/ __ \/ __/ __ \/ / __ \/ __ `/
+ / ____/ /_/ / /_/ /_/ / /  / /__/ / / / / /___/ / /_/ / / / / /_/ / / / / / / / /_/ / 
+/_/    \__, /\__/\____/_/   \___/_/ /_/ /_____/_/\__, /_/ /_/\__/_/ /_/_/_/ /_/\__, /  
+      /____/                                    /____/                        /____/   
+"""
 
 
 def training_pipeline(args: argparse.Namespace):
@@ -40,11 +50,20 @@ def training_pipeline(args: argparse.Namespace):
     logger = WandbLogger(name="face-anti-spoof", project="cv-project")
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="val/accuracy", min_delta=0.00, patience=4, verbose=False, mode="max")
+    es_callback = EarlyStopping(monitor="val/accuracy", min_delta=0.00, patience=3, verbose=False, mode="max")
+
+    ckpt_callback = ModelCheckpoint(
+        monitor='val/accuracy',
+        dirpath='checkpoint',
+        filename='sample',
+        save_top_k=3,
+        mode='max',
+    )
 
     # Load trainer
-    trainer = Trainer(max_epochs=args.max_epochs,
-                      callbacks=[es_callback],
+    trainer = Trainer(default_root_dir="..", 
+                      max_epochs=args.max_epochs,
+                      callbacks=[es_callback, ckpt_callback],
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)
