@@ -33,7 +33,7 @@ class SEResNeXT50(nn.Module):
 
         # Classifier
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x: Tensor):
         out = self.resnext(x)

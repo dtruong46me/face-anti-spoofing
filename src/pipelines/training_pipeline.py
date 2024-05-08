@@ -59,7 +59,7 @@ def training_pipeline(args: argparse.Namespace):
     ckpt_callback = ModelCheckpoint(
         dirpath='checkpoint',
         filename='cvproject',
-        save_top_k=2,
+        save_top_k=3,
         verbose=True,
         mode='min',
         monitor="val/apcer"
@@ -67,7 +67,7 @@ def training_pipeline(args: argparse.Namespace):
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs,
-                      callbacks=[es_callback, ckpt_callback],
+                      callbacks=[ckpt_callback],
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)

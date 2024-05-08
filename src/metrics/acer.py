@@ -10,11 +10,11 @@ from apcer import APCER
 from npcer import NPCER
 
 class ACER(Metric):
-    def __init__(self, dist_sync_on_step=False):
-        super().__init__(dist_sync_on_step=dist_sync_on_step)
+    def __init__(self):
+        super().__init__()
 
-        self.apcer = APCER(dist_sync_on_step=dist_sync_on_step)
-        self.npcer = NPCER(dist_sync_on_step=dist_sync_on_step)
+        self.apcer = APCER()
+        self.npcer = NPCER()
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):
         self.apcer.update(preds, target)
