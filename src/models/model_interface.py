@@ -17,19 +17,28 @@ from models.mobilenet import MobileNetV2
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
 
+
+"""
+    __  ___          __     __   ____      __            ____              
+   /  |/  /___  ____/ /__  / /  /  _/___  / /____  _____/ __/___ _________ 
+  / /|_/ / __ \/ __  / _ \/ /   / // __ \/ __/ _ \/ ___/ /_/ __ `/ ___/ _ \ 
+ / /  / / /_/ / /_/ /  __/ /  _/ // / / / /_/  __/ /  / __/ /_/ / /__/  __/
+/_/  /_/\____/\__,_/\___/_/  /___/_/ /_/\__/\___/_/  /_/  \__,_/\___/\___/ 
+"""
+
 class ModelInterface(LightningModule):
     def __init__(self, model, input_shape, num_classes):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
 
-        self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.train_recall = Recall(task="binary", num_classes=num_classes)
-        self.train_apcer = APCER()
+        self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.train_recall = Recall(task="multiclass", num_classes=num_classes)
+        # self.train_apcer = APCER()
         
-        self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.val_recall = Recall(task="binary", num_classes=num_classes)
-        self.val_apcer = APCER()
+        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.val_recall = Recall(task="multiclass", num_classes=num_classes)
+        # self.val_apcer = APCER()
 
         self.backbone = model
 
@@ -71,7 +80,7 @@ class ModelInterface(LightningModule):
     
     def _common_step(self, batch, batch_idx):
         images, labels = batch
-        labels = labels.unsqueeze(1).float()
+        labels = labels.unsqueeze(0).float()
 
         outputs = self.forward(images)
         loss = nn.BCELoss()(outputs, labels)

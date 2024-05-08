@@ -24,7 +24,12 @@ class LCCFASDataset(LightningDataModule):
         self.num_classes = args.num_classes
 
         '''
-        Trong đó cấu trúc thư mục của /kaggle/input/lcc-fasd/ như sau:
+            ____        __                  __ 
+           / __ \____ _/ /_____ _________  / /_
+          / / / / __ `/ __/ __ `/ ___/ _ \/ __/
+         / /_/ / /_/ / /_/ /_/ (__  )  __/ /_  
+        /_____/\__,_/\__/\__,_/____/\___/\__/  
+
         /kaggle/input/lcc-fasd/
         |--LCC_FASD
             |--LCC_FASD_development
