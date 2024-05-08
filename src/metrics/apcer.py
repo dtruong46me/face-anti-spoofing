@@ -9,7 +9,7 @@ class APCER(Metric):
         self.add_state("total_attack_error", default=torch.tensor(0), dist_reduce_fx="sum")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):        
-        preds = 1 - torch.argmax(preds, dim=1)
+        preds = torch.argmax(preds, dim=1)
         target = 1 - torch.argmax(target, dim=1)
 
         false_pos = torch.sum((preds==1) & (target==0))

@@ -9,7 +9,7 @@ class NPCER(Metric):
         self.add_state("total_normal_error", default=torch.tensor(0), dist_reduce_fx="sum")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):        
-        preds = 1 - torch.argmax(preds, dim=1)
+        preds = torch.argmax(preds, dim=1)
         target = 1 - torch.argmax(target, dim=1)
 
         false_neg = torch.sum((preds==0) & (target==1))
