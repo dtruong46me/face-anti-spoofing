@@ -11,7 +11,7 @@ from src.models.ln_model import ModelInterface
 from models.resnext50 import SEResNeXT50
 from src.utils import load_transform
 
-def predict_sample(modelpath, image, args):
+def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224,224), num_classes=2):
     # Define the preprocessing transformations
     preprocess = load_transform()
 
@@ -23,18 +23,18 @@ def predict_sample(modelpath, image, args):
 
     # Load backbone model
     backbone = None
-    if args.modelname == "seresnext50":
-        backbone = SEResNeXT50(args.input_shape, args.num_classes)
-    if args.modelname == "mobilenetv2":
+    if modelname == "seresnext50":
+        backbone = SEResNeXT50(input_shape, num_classes)
+    if modelname == "mobilenetv2":
         backbone = None
-    if args.modelname == "feathernet":
+    if modelname == "feathernet":
         backbone = None
 
     # Load the model from the checkpoint
     model = ModelInterface.load_from_checkpoint(checkpoint_path=modelpath,
                                                 model=backbone,
-                                                input_shape=args.input_shape,
-                                                num_classes=args.num_classes)
+                                                input_shape=input_shape,
+                                                num_classes=num_classes)
     model.eval()
     
     # Perform the prediction
@@ -68,7 +68,7 @@ def main():
     parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
 
-    result = predict_sample(args.model_path, args.image, args)
+    result = predict_sample(args.model_path, args.image, args.modelname, args.input_shape, args.num_classes)
     print(result)
 
 if __name__=="__main__":
