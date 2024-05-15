@@ -53,15 +53,12 @@ def predict_sample(args):
     # Perform the prediction
     with torch.no_grad():
         outputs = model(image)
-        print("output =", outputs)
         probabilities = torch.softmax(outputs, dim=1)
-        print("probability =", probabilities)
 
     # Get the predicted class and the associated probabilities
     predicted_class = torch.argmax(probabilities, dim=1).item()
     predicted_probabilities = probabilities.squeeze().cpu().numpy()
-    print("predicted_probability =", predicted_probabilities)
-
+    
     if predicted_class == 0:
         result = {'tensor': [0, 1], 'class': 0, 'label': 'real', 'probability': predicted_probabilities[0]}
     else:
