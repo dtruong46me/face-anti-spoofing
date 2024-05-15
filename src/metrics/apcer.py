@@ -10,8 +10,8 @@ class APCER(Metric):
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):
         """
-        preds=1: fake -> Positive
-        preds=0: real -> Negative
+        preds=0: real -> Negative -> [1,0]
+        preds=1: fake -> Positive -> [0,1]
         """ 
         preds = torch.argmax(preds, dim=1)
         target = torch.argmax(target, dim=1)
