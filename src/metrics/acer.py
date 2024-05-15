@@ -23,5 +23,7 @@ class ACER(Metric):
     def compute(self):
         apcer = self.apcer.compute()
         npcer = self.npcer.compute()
-        acer = (apcer + npcer) / 2
+
+        acer = 0.5 * (apcer + npcer)
+        
         return acer
