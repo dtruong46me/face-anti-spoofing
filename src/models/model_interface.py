@@ -16,7 +16,7 @@ from models.mobilenet import MobileNetV2
 
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
-
+from metrics.accuracy import MyAccuracy
 
 """
     __  ___          __     __   ____      __            ____              
@@ -36,6 +36,7 @@ class ModelInterface(LightningModule):
         self.train_recall = Recall(task="binary", num_classes=num_classes)
         self.train_apcer = APCER()
         self.train_npcer = NPCER()
+        self.my_accuracy = MyAccuracy()
         
         self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
         self.val_recall = Recall(task="binary", num_classes=num_classes)
@@ -55,11 +56,12 @@ class ModelInterface(LightningModule):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
         acc = self.train_accuracy(outputs, labels)
+        my_acc = self.my_accuracy(outputs, labels)
         rec = self.train_recall(outputs, labels)
         apcer = self.train_apcer(outputs, labels)
         npcer = self.train_npcer(outputs, labels)
 
-        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": acc, "train/recall": rec, "train/apcer": apcer, "train/npcer": npcer},
+        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": acc, "train/myacc": my_acc, "train/recall": rec, "train/apcer": apcer, "train/npcer": npcer},
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
