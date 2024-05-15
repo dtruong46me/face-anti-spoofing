@@ -94,8 +94,8 @@ def evaluation_pipeline(args: argparse.Namespace):
     all_labels = torch.cat(all_labels, dim=0)
 
     total_image = all_labels.shape[0]
-    positive_image = torch.sum(torch.argmax(all_labels, dim=1))
-    negative_image = total_image - positive_image
+    positive_image = torch.sum(torch.argmax(all_labels, dim=1)).float()
+    negative_image = (total_image - positive_image).float()
 
     apcer = apcer_metric(all_preds, all_labels)
     npcer = npcer_metric(all_labels, all_labels)
@@ -126,7 +126,10 @@ def evaluation_pipeline(args: argparse.Namespace):
     print("accuracy =", (true_pos+true_neg) / (true_pos+true_neg+false_pos+false_neg))
 
     print("============")
-    print(total_image)
-    print(positive_image)
-    print(negative_image)
-    print(true_pos, true_neg, false_pos, false_neg)
+    print("Total images:", total_image)
+    print("Positive - Fake (1):", positive_image)
+    print("Negative - Real (0)", negative_image)
+    print("TP:", true_pos.float(), 
+          "\nTN:", true_neg.float(),
+          "\nFP:", false_pos.float(),
+          "\nFN:", false_neg.float())
