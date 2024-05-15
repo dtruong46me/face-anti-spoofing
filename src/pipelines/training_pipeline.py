@@ -16,6 +16,10 @@ sys.path.insert(0, path)
 from models.model_interface import load_model
 from data.dataset import load_data, load_dataloader
 
+from metrics.apcer import APCER
+from metrics.npcer import NPCER
+from metrics.acer import ACER
+
 
 """
  ____           __                        __           __                   __      __                                
@@ -35,7 +39,7 @@ def training_pipeline(args: argparse.Namespace):
     data = load_data(args)
 
     # Load dataloader
-    train_loader, val_loader, _ = load_dataloader(data)
+    train_loader, val_loader, test_loader = load_dataloader(data)
 
     # Load device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -71,6 +75,46 @@ def training_pipeline(args: argparse.Namespace):
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)
+
+    # Save best model checkpoint
+    best_model_path = ckpt_callback.best_model_path
+    print(f"Best model saved at: {best_model_path}")
+
+    # Load model from path
+    model = model.load_from_checkpoint(best_model_path)
+    model.to(device)
+
+    model.eval()
+    apcer_metric = APCER()
+    npcer_metric = NPCER()
+    acer_metric = ACER()
+
+    all_preds = []
+    all_labels = []
+
+    with torch.no_grad():
+        for batch in test_loader:
+            images, labels = batch
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+
+            all_preds.append(outputs)
+            all_labels.append(labels)
+
+    all_preds = torch.cat(all_preds, dim=0)
+    all_labels = torch.cat(all_labels, dim=0)
+
+    apcer = apcer_metric(all_preds, all_labels)
+    npcer = npcer_metric(all_labels, all_labels)
+
+    acer = acer_metric(all_preds, all_labels)
+
+
+    print(f"Test APCER: {apcer}")
+    print(f"Test NPCER: {npcer}")
+    print(f"Test ACER: {acer}")
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()

@@ -1,9 +1,12 @@
 
 import os
+import random
 import sys
 
 from lightning.pytorch import LightningDataModule
 
+import numpy as np
+import torch
 from torch.utils.data import random_split, DataLoader
 from torch import Generator
 from lightning.pytorch.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
@@ -72,9 +75,15 @@ class LCCFASDataset(LightningDataModule):
                 TRAIN_RATE = 0.7
                 train_size = int(TRAIN_RATE*len(self.train))
                 val_size = len(self.train) - train_size
+
+                # Seed for reproducibility
+                seed = 42
+                random.seed(seed)
+                np.random.seed(seed)
+                torch.manual_seed(seed)
                 
                 self.train, self.val = random_split(
-                    self.train, lengths=[train_size, val_size], generator=Generator().manual_seed(42)
+                    self.train, lengths=[train_size, val_size], generator=Generator().manual_seed(seed)
                 )
 
         except Exception as e:
