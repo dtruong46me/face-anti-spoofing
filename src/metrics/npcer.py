@@ -15,8 +15,8 @@ class NPCER(Metric):
         # true_pos = torch.sum((preds==1) & (preds==1))
         true_neg = torch.sum((preds==0) & (target==0))
 
-        false_pos = torch.sum((preds==0) & (target==1))
-        # false_neg = torch.sum((preds==1) & (target==0))
+        false_pos = torch.sum((preds==1) & (target==0))
+        # false_neg = torch.sum((preds==0) & (target==1))
         
         self.total_normal_error += false_pos
         self.total_normal_samples += (true_neg + false_pos)

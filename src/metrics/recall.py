@@ -19,7 +19,7 @@ class MyRecall(Metric):
         true_pos = torch.sum((preds==1) & (target==1))
         # true_neg = torch.sum((preds==0) & (target==0))
 
-        # false_pos = torch.sum((preds==0) & (target==1))
+        # false_pos = torch.sum((preds==1) & (target==0))
         false_neg = torch.sum((preds==0) & (target==1))
 
         self.total_attackk_error += true_pos
