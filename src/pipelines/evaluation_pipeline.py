@@ -70,11 +70,11 @@ def evaluation_pipeline(args: argparse.Namespace):
     model.to(device)
 
     model.eval()
-    apcer_metric = APCER()
-    npcer_metric = NPCER()
-    acer_metric = ACER()
-    accuracy = MyAccuracy()
-    recall = MyRecall()
+    apcer_metric = APCER().to(device)
+    npcer_metric = NPCER().to(device)
+    acer_metric = ACER().to(device)
+    accuracy = MyAccuracy().to(device)
+    recall = MyRecall().to(device)
 
     all_preds = []
     all_labels = []
@@ -83,7 +83,7 @@ def evaluation_pipeline(args: argparse.Namespace):
         for batch in test_loader:
             images, labels = batch
             images = images.to(device)
-            labels = labels
+            labels = labels.to(device)
 
             outputs = model(images)
 

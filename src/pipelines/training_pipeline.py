@@ -103,9 +103,9 @@ def training_pipeline(args: argparse.Namespace):
     model.to(device)
 
     model.eval()
-    apcer_metric = APCER()
-    npcer_metric = NPCER()
-    acer_metric = ACER()
+    apcer_metric = APCER().to(device)
+    npcer_metric = NPCER().to(device)
+    acer_metric = ACER().to(device)
 
     all_preds = []
     all_labels = []
@@ -114,7 +114,7 @@ def training_pipeline(args: argparse.Namespace):
         for batch in test_loader:
             images, labels = batch
             images = images.to(device)
-            labels = labels
+            labels = labels.to(device)
 
             outputs = model(images)
 
