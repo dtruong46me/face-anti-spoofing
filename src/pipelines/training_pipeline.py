@@ -54,7 +54,7 @@ def training_pipeline(args: argparse.Namespace):
 
     # Load logger
     wandb.login(key=args.wandb_token)
-    logger = WandbLogger(name=args.wandb_name, project="cv-project")
+    logger = WandbLogger(name=args.wandb_runname, project="cv-project")
 
     # Load callbacks
     es_callback = EarlyStopping(monitor="val/apcer", min_delta=0.00, patience=4, verbose=True, mode="min")
