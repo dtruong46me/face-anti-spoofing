@@ -20,12 +20,13 @@ def visualize_data(data_loader, num_images=5):
 
     plt.tight_layout()
     plt.show()
-    plt.savefig("test.jpg")
+    plt.savefig("images.jpg")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Visualize Data')
     parser.add_argument('--datapath', type=str, required=True, help='Path to dataset')
-    parser.add_argument('--batch_size', type=int, default=1, help='Batch size for DataLoader')
+    parser.add_argument('--batch_size', type=int, default=32, help='Batch size for DataLoader')
+    parser.add_argument('--num_images', type=int, default=5, help='Number of images to visualize')
     args = parser.parse_args()
 
     transform = transforms.Compose([
@@ -37,4 +38,4 @@ if __name__ == "__main__":
     dataset = IngestData(args.datapath, transform)
     data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
 
-    visualize_data(data_loader)
+    visualize_data(data_loader, num_images=args.num_images)

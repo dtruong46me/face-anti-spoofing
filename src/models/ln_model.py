@@ -5,7 +5,7 @@ from lightning.pytorch import LightningModule
 from torch.optim import Adam
 import torch
 import torch.nn as nn
-from torchmetrics.classification import Accuracy, Recall
+from torchsummary import summary
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
@@ -16,8 +16,9 @@ from models.mobilenet import MobileNetV2
 
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
+from metrics.acer import ACER
 from metrics.accuracy import MyAccuracy
-from metrics.recall import Recall_1, Recall_2
+from metrics.recall import MyRecall
 
 """
     __  ___          __     __   ____      __            ____              
@@ -33,20 +34,24 @@ class ModelInterface(LightningModule):
         self.input_shape = input_shape
         self.num_classes = num_classes
 
-        self.train_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.train_recall = Recall(task="binary", num_classes=num_classes)
+        # Metric for training
         self.train_apcer = APCER()
         self.train_npcer = NPCER()
-        self.my_accuracy = MyAccuracy()
-        self.my_recall1 = Recall_1()
-        self.my_recall2 = Recall_2()
+        self.train_acer = ACER()
+        self.train_accuracy = MyAccuracy()
+        self.train_recall = MyRecall()
         
-        self.val_accuracy = Accuracy(task="binary", num_classes=num_classes)
-        self.val_recall = Recall(task="binary", num_classes=num_classes)
+        # Metric for validation
         self.val_apcer = APCER()
         self.val_npcer = NPCER()
+        self.val_acer = ACER()
+        self.val_accuracy = MyAccuracy()
+        self.val_recall = MyRecall
 
         self.backbone = model
+
+        # Summary model with input shape
+        summary(model, input_size=input_shape)
 
     def forward(self, x: torch.Tensor):
         output = self.backbone(x)
@@ -59,14 +64,12 @@ class ModelInterface(LightningModule):
         loss, outputs, labels = self._common_step(batch, batch_idx)
 
         acc = self.train_accuracy(outputs, labels)
-        my_acc = self.my_accuracy(outputs, labels)
         rec = self.train_recall(outputs, labels)
         apcer = self.train_apcer(outputs, labels)
         npcer = self.train_npcer(outputs, labels)
-        rec1 = self.my_recall1(outputs, labels)
-        rec2 = self.my_recall2(outputs, labels)
+        acer = self.train_acer(outputs, labels)
 
-        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": acc, "train/myacc": my_acc, "train/recall": rec, "train/apcer": apcer, "train/npcer": npcer, "train/rec1": rec1, "train/rec2": rec2},
+        self.log_dict(dictionary={"train/loss": loss, "train/accuracy": acc, "train/recall": rec, "train/apcer": apcer, "train/npcer": npcer, "train/acer": acer},
                       prog_bar=True, logger=True, on_epoch=True, on_step=False)
         return loss
 
@@ -77,12 +80,10 @@ class ModelInterface(LightningModule):
         rec = self.val_recall(outputs, labels)
         apcer = self.val_apcer(outputs, labels)
         npcer = self.val_npcer(outputs, labels)
+        acer = self.val_acer(outputs, labels)
 
-        rec1 = self.my_recall1(outputs, labels)
-        rec2 = self.my_recall2(outputs, labels)
-
-        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": acc, "val/recall": rec, "val/apcer": apcer, "val/npcer": npcer, "val/rec1": rec1, "val/rec2": rec2}, 
-                      prog_bar=False, logger=True, on_epoch=True, on_step=False)
+        self.log_dict(dictionary={"val/loss": loss, "val/accuracy": acc, "val/recall": rec, "val/apcer": apcer, "val/npcer": npcer, "val/acer": acer},
+                      prog_bar=True, logger=True, on_epoch=True, on_step=False)
 
         return loss
     

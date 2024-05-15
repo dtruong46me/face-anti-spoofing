@@ -13,7 +13,7 @@ import wandb
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from models.model_interface import load_model, ModelInterface
+from models.ln_model import load_model, ModelInterface
 from data.dataset import load_data, load_dataloader
 
 from metrics.apcer import APCER
@@ -53,8 +53,8 @@ def training_pipeline(args: argparse.Namespace):
     
 
     # Load logger
-    wandb.login(key='c74fcec22fbb4be075a981b1f3db3f464b15b089')
-    logger = WandbLogger(name="face-anti-spoof", project="cv-project")
+    wandb.login(key=args.wandb_token)
+    logger = WandbLogger(name=args.wandb_name, project="cv-project")
 
     # Load callbacks
     es_callback = EarlyStopping(monitor="val/apcer", min_delta=0.00, patience=4, verbose=True, mode="min")
@@ -62,7 +62,7 @@ def training_pipeline(args: argparse.Namespace):
     ckpt_path = "../checkpoint"
     ckpt_callback = ModelCheckpoint(
         dirpath='checkpoint',
-        filename='cvproject',
+        filename=args.modelname,
         save_top_k=3,
         verbose=True,
         mode='min',
@@ -111,7 +111,6 @@ def training_pipeline(args: argparse.Namespace):
 
     acer = acer_metric(all_preds, all_labels)
 
-
     print(f"Test APCER: {apcer}")
     print(f"Test NPCER: {npcer}")
     print(f"Test ACER: {acer}")
@@ -126,5 +125,9 @@ if __name__=='__main__':
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--max_epochs", type=int, default=10)
     args = parser.parse_args()
+
+    print("=========================================")
+    print('\n'.join(f' + {k}={v}' for k, v in vars(args).items()))
+    print("=========================================")
 
     training_pipeline(args)

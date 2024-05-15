@@ -47,22 +47,22 @@ class SEResNeXT50(nn.Module):
         out = self.classifier(out)
         return out
     
-if __name__=="__main__":
-    INPUT_SHAPE = (3,224,224)
-    NUM_CLASSES = 2
+# if __name__=="__main__":
+#     INPUT_SHAPE = (3,224,224)
+#     NUM_CLASSES = 2
 
-    model = SEResNeXT50(input_shape=INPUT_SHAPE, num_classes=NUM_CLASSES)
-    summary(model, input_size=(3, 224, 224))
+#     model = SEResNeXT50(input_shape=INPUT_SHAPE, num_classes=NUM_CLASSES)
+#     summary(model, input_size=(3, 224, 224))
 
-    import torch
-    tensor1 = torch.rand([1,3,224,224])
-    print(tensor1.shape)
+#     import torch
+#     tensor1 = torch.rand([1,3,224,224])
+#     print(tensor1.shape)
 
-    output1 = model.forward(tensor1)
-    print(output1, output1.shape)
+#     output1 = model.forward(tensor1)
+#     print(output1, output1.shape)
 
-    tensor2 = torch.rand([32,3,224,224])
-    print(tensor2.shape)
+#     tensor2 = torch.rand([32,3,224,224])
+#     print(tensor2.shape)
     
-    output2 = model.forward(tensor2)
-    print(output2, output2.shape)
+#     output2 = model.forward(tensor2)
+#     print(output2, output2.shape)
