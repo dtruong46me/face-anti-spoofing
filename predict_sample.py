@@ -21,7 +21,7 @@ def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224
         image = Image.open(image).convert('RGB')
     
     # Apply the transformations to the input image
-    image = preprocess(image).unsqueeze(0)
+    # image = preprocess(image).unsqueeze(0)
 
     plt.imshow(image)
     plt.axis("off")
