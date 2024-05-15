@@ -46,7 +46,7 @@ def predict_sample(args):
     image = preprocess(image).unsqueeze(0)
     image = image.to(device)
 
-    plt.imshow(image.squeeze().permute(1, 2, 0))  # Convert tensor back to image for visualization
+    plt.imshow(image.squeeze().permute(1, 2, 0).cpu().numpy())  # Convert tensor back to image for visualization
     plt.axis("off")
     plt.show()
     
@@ -64,7 +64,7 @@ def predict_sample(args):
     else:
         result = {'tensor': [1, 0], 'class': 1, 'label': 'fake', 'probability': predicted_probabilities[0]}
 
-    plt.imshow(image)
+    plt.imshow(image.squeeze().permute(1, 2, 0).cpu().numpy())
     plt.title(f"Predict: {result['class']} - {result['label']} - prob: {result['probability']:.4f}")
     plt.axis("off")
     plt.show()
