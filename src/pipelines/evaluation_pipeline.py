@@ -86,9 +86,6 @@ def evaluation_pipeline(args: argparse.Namespace):
             labels = labels.to(device)
 
             outputs = model(images)
-            
-            outputs = torch.argmax(outputs, dim=1)
-            labels = torch.argmax(labels, dim=1)
 
             all_preds.append(outputs)
             all_labels.append(labels)
@@ -98,20 +95,6 @@ def evaluation_pipeline(args: argparse.Namespace):
 
     print(all_preds, all_preds.shape)
     print(all_labels, all_labels.shape)
-
-    true_pos = torch.sum((all_preds==1) & (all_labels==1))
-    true_neg = torch.sum((all_preds==0) & (all_labels==0))
-    false_pos = torch.sum((all_preds==0) & (all_labels==1))
-    false_neg = torch.sum((all_preds==1) & (all_labels==0))
-
-    my_apcer = false_neg / (true_pos + false_neg)
-    my_npcer = false_pos / (true_neg + false_pos)
-    my_acer = 0.5 * (my_apcer + my_npcer)
-
-    print("============")
-    print("my_apcer =", my_apcer)
-    print("my_npcer =", my_npcer)
-    print("my_acer =", my_acer)
 
     apcer = apcer_metric(all_preds, all_labels)
     npcer = npcer_metric(all_labels, all_labels)
@@ -126,3 +109,16 @@ def evaluation_pipeline(args: argparse.Namespace):
     print(f"Test Accuracy: {acc}")
     print(f"Test Recall: {rec}")
 
+    true_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==1)).float()
+    true_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==0)).float()
+    false_pos = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==1)).float()
+    false_neg = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==0)).float()
+
+    my_apcer = false_neg / (true_pos + false_neg)
+    my_npcer = false_pos / (true_neg + false_pos)
+    my_acer = 0.5 * (my_apcer + my_npcer)
+
+    print("============")
+    print("my_apcer =", my_apcer)
+    print("my_npcer =", my_npcer)
+    print("my_acer =", my_acer)
