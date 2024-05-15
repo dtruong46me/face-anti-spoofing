@@ -20,7 +20,7 @@ def visualize_data(data_loader, num_images=5):
 
     plt.tight_layout()
     plt.show()
-    plt.savefig()
+    plt.savefig("test.img")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Visualize Data')
