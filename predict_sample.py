@@ -80,7 +80,7 @@ def main():
     parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
 
-    result = predict_sample(args.model_path, args.image, args.modelname, args.input_shape, args.num_classes)
+    result = predict_sample(args)
     print(result)
 
 if __name__=="__main__":
