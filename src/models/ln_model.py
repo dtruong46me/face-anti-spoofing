@@ -50,9 +50,6 @@ class ModelInterface(LightningModule):
 
         self.backbone = model
 
-        # Summary model with input shape
-        summary(model, input_size=input_shape)
-
     def forward(self, x: torch.Tensor):
         output = self.backbone(x)
         return output
@@ -109,6 +106,7 @@ def load_model(modelname: str, input_shape, num_classes):
         if modelname == "seresnext50":
             print(" > Loading model SE-ResNeXT-50")
             backbone = SEResNeXT50(input_shape, num_classes)
+            summary(backbone, input_size=input_shape)
             model = ModelInterface(backbone, input_shape, num_classes)
             return model
         
