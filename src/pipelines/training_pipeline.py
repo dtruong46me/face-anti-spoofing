@@ -13,7 +13,7 @@ import wandb
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from models.model_interface import load_model
+from models.model_interface import load_model, ModelInterface
 from data.dataset import load_data, load_dataloader
 
 from metrics.apcer import APCER
@@ -81,7 +81,7 @@ def training_pipeline(args: argparse.Namespace):
     print(f"Best model saved at: {best_model_path}")
 
     # Load model from path
-    model = model.load_from_checkpoint(best_model_path)
+    model = ModelInterface.load_from_checkpoint(best_model_path)
     model.to(device)
 
     model.eval()
