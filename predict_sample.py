@@ -73,7 +73,7 @@ def predict_sample(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_path", type=str, default="/kaggle/working/checkpoint/cvproject.ckpt")
+    parser.add_argument("--model_checkpoint", type=str, default="/kaggle/working/checkpoint/cvproject.ckpt")
     parser.add_argument("--image", type=str, default="")
     parser.add_argument("--modelname", type=str, default="")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
