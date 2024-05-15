@@ -31,7 +31,10 @@ def predict_sample(modelpath, image, args):
         backbone = None
 
     # Load the model from the checkpoint
-    model = ModelInterface.load_from_checkpoint(modelpath)
+    model = ModelInterface.load_from_checkpoint(checkpoint_path=modelpath,
+                                                model=backbone,
+                                                input_shape=args.input_shape,
+                                                num_classes=args.num_classes)
     model.eval()
     
     # Perform the prediction

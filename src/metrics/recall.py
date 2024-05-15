@@ -16,7 +16,7 @@ class MyRecall(Metric):
         preds = torch.argmax(preds, dim=1)
         target = torch.argmax(target, dim=1)
 
-        true_pos = torch.sum((preds==1) & (preds==1))
+        true_pos = torch.sum((preds==0) & (preds==0))
         # true_neg = torch.sum((preds==1) & (target==1))
 
         # false_pos = torch.sum((preds==0) & (target==1))
