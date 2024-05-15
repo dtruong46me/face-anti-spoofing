@@ -31,9 +31,9 @@ def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224
         backbone = None
 
     # Load the model from the checkpoint
-    model = ModelInterface.load_from_checkpoint(checkpoint_path=modelpath,
+    model = ModelInterface.load_from_checkpoint(modelpath, 
                                                 model=backbone,
-                                                input_shape=input_shape,
+                                                input_shape=input_shape, 
                                                 num_classes=num_classes)
     model.eval()
     

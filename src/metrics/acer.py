@@ -1,7 +1,7 @@
 import torch
 from torchmetrics import Metric
 
-class NPCER(Metric):
+class ACER(Metric):
     def __init__(self):
         super().__init__()
         self.add_state("total_normal_samples", default=torch.tensor(0), dist_reduce_fx="sum")
