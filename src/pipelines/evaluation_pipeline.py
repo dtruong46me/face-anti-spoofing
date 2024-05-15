@@ -124,7 +124,7 @@ def evaluation_pipeline(args: argparse.Namespace):
     print("Total images:", total_image)
     print("Positive - Fake (1):", positive_image)
     print("Negative - Real (0)", negative_image)
-    print("TP:", true_pos.float(), 
-          "\nTN:", true_neg.float(),
-          "\nFP:", false_pos.float(),
-          "\nFN:", false_neg.float())
+    print("TP:", true_pos, 
+          "\nTN:", true_neg,
+          "\nFP:", false_pos,
+          "\nFN:", false_neg)
