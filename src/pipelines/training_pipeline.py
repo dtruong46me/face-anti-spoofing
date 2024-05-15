@@ -14,6 +14,7 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
 from models.ln_model import load_model, ModelInterface
+from models.resnext50 import SEResNeXT50
 from data.dataset import load_data, load_dataloader
 
 from metrics.apcer import APCER
@@ -44,6 +45,20 @@ def training_pipeline(args: argparse.Namespace):
     # Load device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(" > Device map:", device)
+
+    backbone = None
+
+    # Load SEResNeXT50
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    
+    # Load MobileNetV2
+    if args.modelname == "mobilenetv2":
+        backbone = None
+    
+    # Load FeatherNet
+    if args.modelname == "feathernet":
+        backbone = None
 
     # Load model
     model = load_model(modelname=args.modelname, 
@@ -81,7 +96,10 @@ def training_pipeline(args: argparse.Namespace):
     print(f"Best model saved at: {best_model_path}")
 
     # Load model from path
-    model = ModelInterface.load_from_checkpoint(checkpoint_path=best_model_path, input_shape=args.input_shape, num_classes=args.num_classes)
+    model = ModelInterface.load_from_checkpoint(checkpoint_path=best_model_path, 
+                                                model=backbone,
+                                                input_shape=args.input_shape, 
+                                                num_classes=args.num_classes)
     model.to(device)
 
     model.eval()
@@ -115,19 +133,19 @@ def training_pipeline(args: argparse.Namespace):
     print(f"Test NPCER: {npcer}")
     print(f"Test ACER: {acer}")
 
-if __name__=='__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
-    parser.add_argument("--num_classes", type=int, default=2)
-    parser.add_argument("--modelname", type=str, default="seresnext50")
-    parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
-    parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
-    parser.add_argument("--batch_size", type=int, default=64)
-    parser.add_argument("--max_epochs", type=int, default=10)
-    args = parser.parse_args()
+# if __name__=='__main__':
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
+#     parser.add_argument("--num_classes", type=int, default=2)
+#     parser.add_argument("--modelname", type=str, default="seresnext50")
+#     parser.add_argument("--train_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_training")
+#     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
+#     parser.add_argument("--batch_size", type=int, default=64)
+#     parser.add_argument("--max_epochs", type=int, default=10)
+#     args = parser.parse_args()
 
-    print("=========================================")
-    print('\n'.join(f' + {k}={v}' for k, v in vars(args).items()))
-    print("=========================================")
+#     print("=========================================")
+#     print('\n'.join(f' + {k}={v}' for k, v in vars(args).items()))
+#     print("=========================================")
 
-    training_pipeline(args)
+#     training_pipeline(args)

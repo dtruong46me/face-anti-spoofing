@@ -8,9 +8,10 @@ path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
+from models.resnext50 import SEResNeXT50
 from src.utils import load_transform
 
-def predict_sample(modelpath, image):
+def predict_sample(modelpath, image, args):
     # Define the preprocessing transformations
     preprocess = load_transform()
 
@@ -18,7 +19,16 @@ def predict_sample(modelpath, image):
         image = Image.open(image).convert('RGB')
     
     # Apply the transformations to the input image
-    image = preprocess(image).unsqueeze(0) 
+    image = preprocess(image).unsqueeze(0)
+
+    # Load backbone model
+    backbone = None
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    if args.modelname == "mobilenetv2":
+        backbone = None
+    if args.modelname == "feathernet":
+        backbone = None
 
     # Load the model from the checkpoint
     model = ModelInterface.load_from_checkpoint(modelpath)
@@ -50,9 +60,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, default="/kaggle/working/checkpoint/cvproject.ckpt")
     parser.add_argument("--image", type=str, default="")
+    parser.add_argument("--modelname", type=str, default="")
+    parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
+    parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
 
-    result = predict_sample(args.model_path, args.image)
+    result = predict_sample(args.model_path, args.image, args)
     print(result)
 
 if __name__=="__main__":

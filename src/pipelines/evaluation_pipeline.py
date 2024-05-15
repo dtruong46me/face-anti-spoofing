@@ -12,6 +12,7 @@ path = os.path.abspath(os.path.dirname(__name__))
 sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
+from src.models.resnext50 import SEResNeXT50
 from data.load_data import ingest_data
 from utils import load_transform
 from metrics.apcer import APCER
@@ -47,8 +48,25 @@ def evaluation_pipeline(args: argparse.Namespace):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    backbone = None
+
+    # Load SEResNeXT50
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    
+    # Load MobileNetV2
+    if args.modelname == "mobilenetv2":
+        backbone = None
+    
+    # Load FeatherNet
+    if args.modelname == "feathernet":
+        backbone = None
+
     # Load model from path
-    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, input_shape=args.input_shape, num_classes=args.num_classes)
+    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
+                                                model=backbone,
+                                                input_shape=args.input_shape, 
+                                                num_classes=args.num_classes)
     model.to(device)
 
     model.eval()

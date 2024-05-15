@@ -100,26 +100,11 @@ class ModelInterface(LightningModule):
 
 
 
-def load_model(modelname: str, input_shape, num_classes):
+def load_model(backbone, input_shape, num_classes):
     try:
-        # Load SEResNeXT50
-        if modelname == "seresnext50":
-            print(" > Loading model SE-ResNeXT-50")
-            backbone = SEResNeXT50(input_shape, num_classes)
-            model = ModelInterface(backbone, input_shape, num_classes)
-            return model
-        
-        # Load MobileNetV2
-        if modelname == "mobilenetv2":
-            backbone = MobileNetV2(input_shape, num_classes)
-            model = ModelInterface(backbone, input_shape, num_classes)
-            return model
-        
-        # Load FeatherNet
-        if model == "feathernet":
-            backbone = FeatherNet(input_shape, num_classes)
-            model = ModelInterface(backbone, input_shape, num_classes)
-            return model
+
+        model = ModelInterface(backbone, input_shape, num_classes)
+        return model
         
     except Exception as e:
         raise e
