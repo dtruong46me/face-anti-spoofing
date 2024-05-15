@@ -22,7 +22,7 @@ class ACER(Metric):
         self.total_normal_error += false_pos
         self.total_attack_error += false_neg
         self.total_normal_samples += (true_neg + false_pos)
-        self.total_attack_samples += (true_pos, false_neg)
+        self.total_attack_samples += (true_pos + false_neg)
     
     def compute(self):
         return 0.5 * (self.total_normal_error.float() / self.total_normal_samples.float() + self.total_attack_error.float() / self.total_attack_samples.float())
