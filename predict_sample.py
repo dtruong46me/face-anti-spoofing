@@ -49,6 +49,7 @@ def predict_sample(args):
     plt.imshow(image.squeeze().permute(1, 2, 0).cpu().numpy())  # Convert tensor back to image for visualization
     plt.axis("off")
     plt.show()
+    plt.savefig("sample.jpg")
     
     # Perform the prediction
     with torch.no_grad():
