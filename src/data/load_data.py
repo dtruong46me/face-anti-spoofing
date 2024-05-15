@@ -14,11 +14,11 @@ class IngestData(Dataset):
     
     def __getitem__(self, index):
         """
-        0: real -> [1,0]
-        1: fake -> [0,1]
+        0: real -> [0,1]
+        1: fake -> [1,0]
         """
         image, label = self.data[index]
-        target = tensor([0,1]) if label != 0 else tensor([0,1])
+        target = tensor([1,0]) if label != 0 else tensor([0,1])
         return (image, target)
     
     
