@@ -93,8 +93,9 @@ def evaluation_pipeline(args: argparse.Namespace):
     all_preds = torch.cat(all_preds, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
 
-    print(all_preds, all_preds.shape)
-    print(all_labels, all_labels.shape)
+    total_image = all_labels.shape[0]
+    positive_image = torch.sum(torch.argmax(all_labels, dim=1))
+    negative_image = total_image - positive_image
 
     apcer = apcer_metric(all_preds, all_labels)
     npcer = npcer_metric(all_labels, all_labels)
@@ -122,3 +123,10 @@ def evaluation_pipeline(args: argparse.Namespace):
     print("my_apcer =", my_apcer)
     print("my_npcer =", my_npcer)
     print("my_acer =", my_acer)
+    print("accuracy =", (true_pos+true_neg) / (true_pos+true_neg+false_pos+false_neg))
+
+    print("============")
+    print(total_image)
+    print(positive_image)
+    print(negative_image)
+    print(true_pos, true_neg, false_pos, false_neg)
