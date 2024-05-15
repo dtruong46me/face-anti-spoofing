@@ -46,7 +46,7 @@ class ModelInterface(LightningModule):
         self.val_npcer = NPCER()
         self.val_acer = ACER()
         self.val_accuracy = MyAccuracy()
-        self.val_recall = MyRecall
+        self.val_recall = MyRecall()
 
         self.backbone = model
 
