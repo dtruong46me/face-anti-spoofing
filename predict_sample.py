@@ -40,14 +40,12 @@ def predict_sample(args):
         image = Image.open(args.image).convert('RGB')
     
     # Apply the transformations to the input image
-    # image = preprocess(image).unsqueeze(0)
 
-    plt.imshow(image)
+    image = preprocess(image).unsqueeze(0)
+
+    plt.imshow(image.squeeze().permute(1, 2, 0))  # Convert tensor back to image for visualization
     plt.axis("off")
     plt.show()
-    plt.savefig("sample.jpg")
-
-
     
     # Perform the prediction
     with torch.no_grad():
