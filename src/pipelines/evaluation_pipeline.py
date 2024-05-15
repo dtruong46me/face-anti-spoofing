@@ -48,7 +48,7 @@ def evaluation_pipeline(args: argparse.Namespace):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load model from path
-    model = ModelInterface.load_from_checkpoint(args.model_checkpoint)
+    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, input_shape=args.input_shape, num_classes=args.num_classes)
     model.to(device)
 
     model.eval()
