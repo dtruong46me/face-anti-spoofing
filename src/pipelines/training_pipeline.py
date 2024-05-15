@@ -61,7 +61,7 @@ def training_pipeline(args: argparse.Namespace):
         backbone = None
 
     # Load model
-    model = load_model(modelname=args.modelname, 
+    model = load_model(backbone=backbone,
                        input_shape=args.input_shape, 
                        num_classes=args.num_classes)
     model.to(device)
