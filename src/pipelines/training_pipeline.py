@@ -114,7 +114,7 @@ def training_pipeline(args: argparse.Namespace):
         for batch in test_loader:
             images, labels = batch
             images = images.to(device)
-            labels = labels.to(device)
+            labels = labels
 
             outputs = model(images)
 
