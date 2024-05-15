@@ -33,6 +33,8 @@ def predict_sample(args):
                                                 model=backbone,
                                                 input_shape=args.input_shape, 
                                                 num_classes=args.num_classes)
+    
+    model.to(device)
 
     model.eval()
 
@@ -42,6 +44,7 @@ def predict_sample(args):
     # Apply the transformations to the input image
 
     image = preprocess(image).unsqueeze(0)
+    image = image.to(device)
 
     plt.imshow(image.squeeze().permute(1, 2, 0))  # Convert tensor back to image for visualization
     plt.axis("off")
