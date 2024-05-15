@@ -3,6 +3,7 @@ import torch
 import sys, os, argparse
 from PIL import Image
 import matplotlib.pyplot as plt
+import torch
 
 path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
@@ -10,6 +11,7 @@ sys.path.insert(0, path)
 from src.models.ln_model import ModelInterface
 from models.resnext50 import SEResNeXT50
 from src.utils import load_transform
+
 
 def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224,224), num_classes=2):
     # Define the preprocessing transformations
@@ -21,6 +23,11 @@ def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224
     # Apply the transformations to the input image
     image = preprocess(image).unsqueeze(0)
 
+    plt.imshow(image)
+    plt.axis("off")
+    plt.show()
+    plt.savefig("sample.jpg")
+
     # Load backbone model
     backbone = None
     if modelname == "seresnext50":
@@ -30,11 +37,15 @@ def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224
     if modelname == "feathernet":
         backbone = None
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     # Load the model from the checkpoint
     model = ModelInterface.load_from_checkpoint(modelpath, 
                                                 model=backbone,
                                                 input_shape=input_shape, 
                                                 num_classes=num_classes)
+    model.to(device)
+
     model.eval()
     
     # Perform the prediction
