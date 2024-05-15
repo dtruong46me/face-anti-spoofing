@@ -86,6 +86,7 @@ def evaluation_pipeline(args: argparse.Namespace):
             labels = labels.to(device)
 
             outputs = model(images)
+            outputs = torch.argmax(outputs, dim=1)
 
             all_preds.append(outputs)
             all_labels.append(labels)
