@@ -106,7 +106,6 @@ def load_model(modelname: str, input_shape, num_classes):
         if modelname == "seresnext50":
             print(" > Loading model SE-ResNeXT-50")
             backbone = SEResNeXT50(input_shape, num_classes)
-            summary(backbone, input_size=input_shape)
             model = ModelInterface(backbone, input_shape, num_classes)
             return model
         
