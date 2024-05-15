@@ -14,8 +14,8 @@ class IngestData(Dataset):
     
     def __getitem__(self, index):
         """
-        0: real -> P
-        1: fake -> N
+        0: real -> [0,1]
+        1: fake -> [1,0]
         """
         image, label = self.data[index]
         target = tensor([1,0]) if label != 0 else tensor([0,1])
