@@ -58,11 +58,11 @@ def predict_sample(args):
     # Get the predicted class and the associated probabilities
     predicted_class = torch.argmax(probabilities, dim=1).item()
     predicted_probabilities = probabilities.squeeze().cpu().numpy()
-    
+
     if predicted_class == 0:
-        result = {'tensor': [0, 1], 'class': 0, 'label': 'real', 'probability': predicted_probabilities[0]}
+        result = {'tensor': [1, 0], 'class': 0, 'label': 'real', 'probability': predicted_probabilities[0]}
     else:
-        result = {'tensor': [1, 0], 'class': 1, 'label': 'fake', 'probability': predicted_probabilities[1]}
+        result = {'tensor': [0, 1], 'class': 1, 'label': 'fake', 'probability': predicted_probabilities[1]}
 
     plt.imshow(image.squeeze().permute(1, 2, 0).cpu().numpy())
     plt.title(f"Predict: {result['class']} - {result['label']} - prob: {result['probability']:.4f}")
