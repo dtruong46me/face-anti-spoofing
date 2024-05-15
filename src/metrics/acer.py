@@ -4,7 +4,7 @@ from torchmetrics import Metric
 import os, sys
 
 path = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0)
+sys.path.insert(0, path)
 
 from apcer import APCER
 from npcer import NPCER
