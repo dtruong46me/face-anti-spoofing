@@ -13,35 +13,31 @@ from models.resnext50 import SEResNeXT50
 from src.utils import load_transform
 
 
-def predict_sample(modelpath, image, modelname="seresnext50", input_shape=(3,224,224), num_classes=2):
+def predict_sample(args):
     # Define the preprocessing transformations
     preprocess = load_transform()
     
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     # Load backbone model
     backbone = None
-    if modelname == "seresnext50":
-        backbone = SEResNeXT50(input_shape, num_classes)
-    if modelname == "mobilenetv2":
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    if args.modelname == "mobilenetv2":
         backbone = None
-    if modelname == "feathernet":
+    if args.modelname == "feathernet":
         backbone = None
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(" > device:", device)
-
-    # Load the model from the checkpoint
-    model = ModelInterface.load_from_checkpoint(modelpath, 
+    # Load model from path
+    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
                                                 model=backbone,
-                                                input_shape=input_shape, 
-                                                num_classes=num_classes)
-    
-    print(" > Loaded model")
-    model.to(device)
+                                                input_shape=args.input_shape, 
+                                                num_classes=args.num_classes)
 
     model.eval()
 
-    if type(image)==str:
-        image = Image.open(image).convert('RGB')
+    if type(args.image)==str:
+        image = Image.open(args.image).convert('RGB')
     
     # Apply the transformations to the input image
     # image = preprocess(image).unsqueeze(0)
