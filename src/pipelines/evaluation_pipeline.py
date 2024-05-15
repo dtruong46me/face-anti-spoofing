@@ -93,7 +93,7 @@ def evaluation_pipeline(args: argparse.Namespace):
     negative_image = (total_image - positive_image).float()
 
     apcer = apcer_metric(all_preds, all_labels)
-    npcer = npcer_metric(all_labels, all_labels)
+    npcer = npcer_metric(all_preds, all_labels)
 
     acer = acer_metric(all_preds, all_labels)
     acc = accuracy(all_preds, all_labels)
