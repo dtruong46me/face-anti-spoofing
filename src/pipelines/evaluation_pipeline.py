@@ -12,6 +12,7 @@ path = os.path.abspath(os.path.dirname(__name__))
 sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
+from src.models.resnext50 import SEResNeXT50
 from data.load_data import ingest_data
 from utils import load_transform
 from metrics.apcer import APCER
@@ -47,16 +48,28 @@ def evaluation_pipeline(args: argparse.Namespace):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # Load backbone model
+    backbone = None
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    if args.modelname == "mobilenetv2":
+        backbone = None
+    if args.modelname == "feathernet":
+        backbone = None
+
     # Load model from path
-    model = ModelInterface.load_from_checkpoint(args.model_checkpoint)
+    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
+                                                model=backbone,
+                                                input_shape=args.input_shape, 
+                                                num_classes=args.num_classes)
     model.to(device)
 
     model.eval()
-    apcer_metric = APCER()
-    npcer_metric = NPCER()
-    acer_metric = ACER()
-    accuracy = MyAccuracy()
-    recall = MyRecall()
+    apcer_metric = APCER().to(device)
+    npcer_metric = NPCER().to(device)
+    acer_metric = ACER().to(device)
+    accuracy = MyAccuracy().to(device)
+    recall = MyRecall().to(device)
 
     all_preds = []
     all_labels = []
@@ -75,8 +88,12 @@ def evaluation_pipeline(args: argparse.Namespace):
     all_preds = torch.cat(all_preds, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
 
+    total_image = all_labels.shape[0]
+    positive_image = torch.sum(torch.argmax(all_labels, dim=1)).float()
+    negative_image = (total_image - positive_image).float()
+
     apcer = apcer_metric(all_preds, all_labels)
-    npcer = npcer_metric(all_labels, all_labels)
+    npcer = npcer_metric(all_preds, all_labels)
 
     acer = acer_metric(all_preds, all_labels)
     acc = accuracy(all_preds, all_labels)
@@ -87,3 +104,27 @@ def evaluation_pipeline(args: argparse.Namespace):
     print(f"Test ACER: {acer}")
     print(f"Test Accuracy: {acc}")
     print(f"Test Recall: {rec}")
+
+    true_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==1)).float()
+    true_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==0)).float()
+    false_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==0)).float()
+    false_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==1)).float()
+
+    my_apcer = false_neg / (true_pos + false_neg)
+    my_npcer = false_pos / (true_neg + false_pos)
+    my_acer = 0.5 * (my_apcer + my_npcer)
+
+    print("============")
+    print("my_apcer =", my_apcer)
+    print("my_npcer =", my_npcer)
+    print("my_acer =", my_acer)
+    print("accuracy =", (true_pos+true_neg) / (true_pos+true_neg+false_pos+false_neg))
+
+    print("============")
+    print("Total images:", total_image)
+    print("Positive - Fake (1):", positive_image)
+    print("Negative - Real (0)", negative_image)
+    print("TP:", true_pos, 
+          "\nTN:", true_neg,
+          "\nFP:", false_pos,
+          "\nFN:", false_neg)

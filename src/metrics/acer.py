@@ -1,27 +1,28 @@
 import torch
 from torchmetrics import Metric
 
-import os, sys
-
-path = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, path)
-
-from apcer import APCER
-from npcer import NPCER
-
 class ACER(Metric):
     def __init__(self):
         super().__init__()
+        self.add_state("total_normal_samples", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("total_normal_error", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("total_attack_samples", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("total_attack_error", default=torch.tensor(0), dist_reduce_fx="sum")
 
-        self.apcer = APCER()
-        self.npcer = NPCER()
+    def update(self, preds: torch.Tensor, target: torch.Tensor):        
+        preds = torch.argmax(preds, dim=1)
+        target = torch.argmax(target, dim=1)
 
-    def update(self, preds: torch.Tensor, target: torch.Tensor):
-        self.apcer.update(preds, target)
-        self.npcer.update(preds, target)
+        true_pos = torch.sum((preds==1) & (target==1))
+        true_neg = torch.sum((preds==0) & (target==0))
 
+        false_pos = torch.sum((preds==1) & (target==0))
+        false_neg = torch.sum((preds==0) & (target==1))
+        
+        self.total_normal_error += false_pos
+        self.total_attack_error += false_neg
+        self.total_normal_samples += (true_neg + false_pos)
+        self.total_attack_samples += (true_pos + false_neg)
+    
     def compute(self):
-        apcer = self.apcer.compute()
-        npcer = self.npcer.compute()
-        acer = (apcer + npcer) / 2
-        return acer
+        return 0.5 * (self.total_normal_error.float() / self.total_normal_samples.float() + self.total_attack_error.float() / self.total_attack_samples.float())

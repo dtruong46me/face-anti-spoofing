@@ -5,8 +5,8 @@ from torchmetrics import Metric
 class MyRecall(Metric):
     def __init__(self):
         super().__init__()
-        self.add_state("total_attack_samples", default=torch.tensor(0), dist_reduce_fx="sum")
-        self.add_state("total_attack_error", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("total_attackk_samples", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("total_attackk_error", default=torch.tensor(0), dist_reduce_fx="sum")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):
         """
@@ -16,14 +16,14 @@ class MyRecall(Metric):
         preds = torch.argmax(preds, dim=1)
         target = torch.argmax(target, dim=1)
 
-        true_pos = torch.sum((preds==1) & (preds==1))
-        # true_neg = torch.sum((preds==1) & (target==1))
+        true_pos = torch.sum((preds==1) & (target==1))
+        # true_neg = torch.sum((preds==0) & (target==0))
 
-        # false_pos = torch.sum((preds==0) & (target==1))
+        # false_pos = torch.sum((preds==1) & (target==0))
         false_neg = torch.sum((preds==0) & (target==1))
 
-        self.total_attack_error += true_pos
-        self.total_attack_samples += (true_pos + false_neg)
+        self.total_attackk_error += true_pos
+        self.total_attackk_samples += (true_pos + false_neg)
     
     def compute(self):
-        return self.total_attack_error.float() / self.total_attack_samples.float()
+        return self.total_attackk_error.float() / self.total_attackk_samples.float()

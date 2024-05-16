@@ -10,6 +10,7 @@ def run_evaluation():
     parser = argparse.ArgumentParser()
     parser.add_argument("--test_path", type=str, default="/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation")
     parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--modelname", type=str, default="seresnext50")
     parser.add_argument("--model_checkpoint", type=str, default="/kaggle/working/checkpoint/cvproject.ckpt")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
