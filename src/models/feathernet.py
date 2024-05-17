@@ -165,6 +165,6 @@ def FeatherNetB():
     model = FeatherNet(se=True, avgdown=True)
     return model
 
-if __name__ == '__main__':
-    model = FeatherNetB()
-    summary(model, (3, 224, 224))
+# if __name__ == '__main__':
+#     model = FeatherNetB()
+#     summary(model, (3, 224, 224))

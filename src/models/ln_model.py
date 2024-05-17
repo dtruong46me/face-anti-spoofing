@@ -98,11 +98,9 @@ class ModelInterface(LightningModule):
         loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
 
-
-
+# Load Lightning Model
 def load_model(backbone, input_shape, num_classes):
     try:
-
         model = ModelInterface(backbone, input_shape, num_classes)
         return model
         

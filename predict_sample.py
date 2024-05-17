@@ -10,7 +10,7 @@ sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
 from models.resnext50 import SEResNeXT50
-from src.utils import load_transform
+from src.utils import load_transform, load_backbone
 
 
 def predict_sample(args):
@@ -20,13 +20,15 @@ def predict_sample(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load backbone model
-    backbone = None
-    if args.modelname == "seresnext50":
-        backbone = SEResNeXT50(args.input_shape, args.num_classes)
-    if args.modelname == "mobilenetv2":
-        backbone = None
-    if args.modelname == "feathernet":
-        backbone = None
+    # backbone = None
+    # if args.modelname == "seresnext50":
+    #     backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    # if args.modelname == "mobilenetv2":
+    #     backbone = None
+    # if args.modelname == "feathernet":
+    #     backbone = None
+
+    backbone = load_backbone(args)
 
     # Load model from path
     model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 

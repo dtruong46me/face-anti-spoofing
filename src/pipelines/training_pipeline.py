@@ -15,7 +15,11 @@ sys.path.insert(0, path)
 
 from models.ln_model import load_model, ModelInterface
 from models.resnext50 import SEResNeXT50
+from models.mobilenet import MobileNetV3
+from models.feathernet import FeatherNetB
 from data.dataset import load_data, load_dataloader
+
+from utils import load_backbone
 
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
@@ -46,19 +50,20 @@ def training_pipeline(args: argparse.Namespace):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(" > Device map:", device)
 
-    backbone = None
-
     # Load SEResNeXT50
-    if args.modelname == "seresnext50":
-        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    # if args.modelname == "seresnext50":
+    #     backbone = SEResNeXT50(args.input_shape, args.num_classes)
     
-    # Load MobileNetV2
-    if args.modelname == "mobilenetv2":
-        backbone = None
+    # # Load MobileNetV2
+    # if args.modelname == "mobilenetv3":
+    #     backbone = MobileNetV3(args.input_shape, args.num_classes)
     
-    # Load FeatherNet
-    if args.modelname == "feathernet":
-        backbone = None
+    # # Load FeatherNet
+    # if args.modelname == "feathernet":
+    #     backbone = FeatherNetB()
+
+    # Load backbone
+    backbone = load_backbone(args)
 
     # Load model
     model = load_model(backbone=backbone,
