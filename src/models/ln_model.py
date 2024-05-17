@@ -10,9 +10,6 @@ from torchsummary import summary
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from models.resnext50 import SEResNeXT50
-from models.feathernet import FeatherNet
-from models.mobilenet import MobileNetV2
 
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
