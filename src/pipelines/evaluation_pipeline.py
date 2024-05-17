@@ -48,14 +48,6 @@ def evaluation_pipeline(args: argparse.Namespace):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load backbone model
-    # backbone = None
-    # if args.modelname == "seresnext50":
-    #     backbone = SEResNeXT50(args.input_shape, args.num_classes)
-    # if args.modelname == "mobilenetv3":
-    #     backbone = None
-    # if args.modelname == "feathernet":
-    #     backbone = None
 
     backbone = load_backbone(args)
 

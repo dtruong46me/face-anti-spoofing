@@ -50,17 +50,6 @@ def training_pipeline(args: argparse.Namespace):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(" > Device map:", device)
 
-    # Load SEResNeXT50
-    # if args.modelname == "seresnext50":
-    #     backbone = SEResNeXT50(args.input_shape, args.num_classes)
-    
-    # # Load MobileNetV2
-    # if args.modelname == "mobilenetv3":
-    #     backbone = MobileNetV3(args.input_shape, args.num_classes)
-    
-    # # Load FeatherNet
-    # if args.modelname == "feathernet":
-    #     backbone = FeatherNetB()
 
     # Load backbone
     backbone = load_backbone(args)
