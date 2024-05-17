@@ -8,11 +8,11 @@
 
 """
 import torch.nn as nn
-# from torchsummary import summary
+from torchsummary import summary
 from torchvision.models import mobilenet_v3_small
 
 class MobileNetV3(nn.Module):
-    def __init__(self, input_shape, num_classes=2):
+    def __init__(self, input_shape=(3,224,224), num_classes=2):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
@@ -29,6 +29,6 @@ class MobileNetV3(nn.Module):
         x = self.mobilenet.features(x)
         return x
 
-# if __name__ == '__main__':
-#     model = MobileNetV3()
-#     summary(model, (3, 224, 224))
+if __name__ == '__main__':
+    model = MobileNetV3()
+    summary(model, (3, 224, 224))
