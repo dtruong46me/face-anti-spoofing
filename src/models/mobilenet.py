@@ -12,10 +12,10 @@ import torch.nn as nn
 from torchsummary import summary
 from torchvision.models import mobilenet_v3_small
 
-
-class MobileNetV2(nn.Module):
-    def __init__(self, num_classes=2):
+class MobileNetV3(nn.Module):
+    def __init__(self, input_shape=(3,224,224), num_classes=2):
         super().__init__()
+        self.input_shape = input_shape
         self.num_classes = num_classes
         self.model = mobilenet_v3_small(pretrained=False)
 
@@ -28,6 +28,10 @@ class MobileNetV2(nn.Module):
 
 
 if __name__ == '__main__':
+
+    model = MobileNetV3()
+    summary(model, (3, 224, 224))
+
     model = MobileNetV2()
     summary(model, (3, 224, 224))
 
@@ -43,3 +47,4 @@ if __name__ == '__main__':
     # Step 4: Print the output tensor
     print("Model output:", output)
     print("Output shape:", output.shape)
+
