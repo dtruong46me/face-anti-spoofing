@@ -94,8 +94,11 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
+        weights = [0.85, 0.15]
+        weights = torch.FloatTensor(weights).cuda()
+
         outputs = self.forward(images)
-        loss = nn.CrossEntropyLoss(weight=torch.tensor([0.85,0.15], dtype=torch.float))(outputs, labels)
+        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
         return loss, outputs, labels
 
 
