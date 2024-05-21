@@ -11,10 +11,12 @@ parent_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.insert(0, parent_dir)
 
 from src.models.ln_model import ModelInterface
-from models.resnext50 import SEResNeXT50
-from src.utils import load_transform, load_backbone
+from src.models.resnext50 import SEResNeXT50
+from src.utils import load_transform, load_transform_2, load_backbone
 import torch
 from PIL import Image
+preprocess = load_transform_2()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Allow GPU memory growth
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
@@ -24,12 +26,7 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-def predict_fas(args, image):
-    # Define the preprocessing transformations
-    preprocess = load_transform()
-    
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+def load_model(args):
 
     backbone = load_backbone(args)
 
@@ -43,7 +40,9 @@ def predict_fas(args, image):
 
     model.eval()
 
-    
+    return model 
+
+def fas(model, image) :
     # Apply the transformations to the input image
 
     image = preprocess(image).unsqueeze(0)
@@ -75,7 +74,7 @@ face_detector = FaceDetector()
 print("[INFO] Starting video stream...")
 
 
-def face_detection_with_liveness_check(args):
+def face_detection_with_liveness_check(model):
     # Initialize video stream
     video = cv2.VideoCapture(0)
     while True:
@@ -98,9 +97,10 @@ def face_detection_with_liveness_check(args):
         else:
             cv2.putText(frame, "Faces: %s" % (n), (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 200), 2)
             image = VideoUtils.get_image(frame, boxes)
-            face_image = Image.fromarray(image)
+            image = image[..., ::-1]
+            face_image = Image.fromarray(image)  
             # Call the function predict_fas and get the result
-            result = predict_fas(args, face_image)
+            result = fas(model, face_image)
 
             # Get the label and probability from the result
             label = result['label']
@@ -122,6 +122,8 @@ def face_detection_with_liveness_check(args):
         # Reduce frame rate for slower detection
         key = cv2.waitKey(15)
         if key == ord('q'):
+            face_image.save('output_image.png')
+            print("save")
             break
 
     # Release video stream and close windows
@@ -174,8 +176,11 @@ def main():
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
-
-    face_detection_with_liveness_check(args)
+    FAS_MODEL_PATH = r"FAS_detector\model\antispoofing.h5"
+    #model = VideoUtils.load_keras_model(FAS_MODEL_PATH)
+    #face_detection_with_liveness(model)
+    model = load_model(args)
+    face_detection_with_liveness_check(model)
 
 if __name__=="__main__":
     main()
