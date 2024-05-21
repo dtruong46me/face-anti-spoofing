@@ -18,6 +18,12 @@ def load_transform():
                              std=[0.229, 0.224, 0.225])
     ])
 
+def load_transform_2():
+    return transforms.Compose([
+        transforms.Resize([224,224]),
+        transforms.ToTensor()
+    ])
+
 
 def load_backbone(args: argparse.Namespace):
 
