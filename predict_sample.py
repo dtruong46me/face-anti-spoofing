@@ -10,12 +10,12 @@ sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
 from models.resnext50 import SEResNeXT50
-from src.utils import load_transform, load_backbone
+from src.utils import load_transform_2, load_backbone
 
 
 def predict_sample(args):
     # Define the preprocessing transformations
-    preprocess = load_transform()
+    preprocess = load_transform_2()
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -69,9 +69,9 @@ def predict_sample(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default="/kaggle/working/checkpoint/cvproject.ckpt")
-    parser.add_argument("--image", type=str, default="")
-    parser.add_argument("--modelname", type=str, default="")
+    parser.add_argument("--model_checkpoint", type=str, default= r"FAS_detector\model\seresnext50.ckpt")
+    parser.add_argument("--image", type=str, default=r"output_image.png")
+    parser.add_argument("--modelname", type=str, default="seresnext50")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
