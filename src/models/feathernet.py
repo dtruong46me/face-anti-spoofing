@@ -131,12 +131,19 @@ class FeatherNet(nn.Module):
                                                 groups=input_channel, bias=False),
                                       )
 
+        self.classifier = nn.Sequential(
+            nn.AdaptiveAvgPool2d((1, 1)),
+            nn.Flatten(),
+            nn.Dropout(0.2),
+            nn.Linear(input_channel, n_class),
+        )
+
         self._initialize_weights()
 
     def forward(self, x):
         x = self.features(x)
         x = self.final_DW(x)
-
+        x = self.classifier(x)
         x = x.view(x.size(0), -1)
         return x
 
