@@ -93,32 +93,27 @@ def evaluation_pipeline(args: argparse.Namespace):
     acc = accuracy(all_preds, all_labels)
     rec = recall(all_preds, all_labels)
 
-    print(f"Test APCER: {apcer}")
-    print(f"Test NPCER: {npcer}")
-    print(f"Test ACER: {acer}")
-    print(f"Test Accuracy: {acc}")
-    print(f"Test Recall: {rec}")
+    print(f"APCER: {apcer}")
+    print(f"NPCER: {npcer}")
+    print(f"ACER: {acer}")
+    print(f"Accuracy: {acc}")
+    print(f"Recall: {rec}")
 
     true_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==1)).float()
     true_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==0)).float()
     false_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==0)).float()
     false_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==1)).float()
 
-    my_apcer = false_neg / (true_pos + false_neg)
-    my_npcer = false_pos / (true_neg + false_pos)
-    my_acer = 0.5 * (my_apcer + my_npcer)
-
-    print("============")
-    print("my_apcer =", my_apcer)
-    print("my_npcer =", my_npcer)
-    print("my_acer =", my_acer)
-    print("accuracy =", (true_pos+true_neg) / (true_pos+true_neg+false_pos+false_neg))
+    true_pos = int(true_pos.item())
+    true_neg = int(true_neg.item())
+    false_pos = int(false_pos.item())
+    false_neg = int(false_neg.item())
 
     print("============")
     print("Total images:", total_image)
     print("Positive - Fake (1):", positive_image)
     print("Negative - Real (0)", negative_image)
-    print("TP:", true_pos, 
-          "\nTN:", true_neg,
-          "\nFP:", false_pos,
-          "\nFN:", false_neg)
+    print("+TP:", true_pos, 
+          "\n+TN:", true_neg,
+          "\n+FP:", false_pos,
+          "\n+FN:", false_neg)
