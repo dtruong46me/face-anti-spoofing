@@ -29,7 +29,7 @@ class SEResNeXT50(nn.Module):
         # Linear 1
         self.fc1 = nn.Linear(in_features=in_features, out_features=512)
         self.relu =nn.ReLU()
-        self.dropout1 = nn.Dropout(p=0.5)
+        self.dropout1 = nn.Dropout(p=0.3)
 
         # Classifier
         self.classifier = nn.Linear(in_features=512, out_features=num_classes)

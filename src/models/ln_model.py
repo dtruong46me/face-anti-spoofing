@@ -52,7 +52,7 @@ class ModelInterface(LightningModule):
         return output
     
     def configure_optimizers(self):
-        return Adam(self.parameters(), lr=5e-4, weight_decay=0.05)
+        return Adam(self.parameters(), lr=1e-4, weight_decay=1e-5)
     
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
@@ -91,11 +91,11 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
-        weights = [0.85, 0.15]
-        weights = torch.FloatTensor(weights).cuda()
+        # weights = [0.85, 0.15]
+        # weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+        loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
 
 # Load Lightning Model
