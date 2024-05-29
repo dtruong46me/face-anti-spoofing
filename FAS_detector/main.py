@@ -171,7 +171,7 @@ def face_detection_with_liveness(model):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default= r"FAS_detector\model\seresnext50_v2.ckpt")
+    parser.add_argument("--model_checkpoint", type=str, default= r"FAS_detector\model\seresnext50.ckpt")
     parser.add_argument("--modelname", type=str, default="seresnext50")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
