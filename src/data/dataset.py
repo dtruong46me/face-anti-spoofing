@@ -54,20 +54,14 @@ class LCCFASDataset(LightningDataModule):
 
     def prepare_data(self) -> None:
         try:
-            # preprocess = transforms.Compose([
-            #     transforms.Resize([224, 224]),
-            #     transforms.ToTensor(),
-            #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
-            #                         std=[0.229, 0.224, 0.225])
-            # ])
-
             preprocess = load_transform_2()
 
             self.train = ingest_data(self.train_path, transform=preprocess)
             print("Load training data:", self.train)
 
-            self.test = ingest_data(self.test_path, transform=preprocess)
-            print("Load test data:", self.test)
+            if self.test_path != "":
+                self.test = ingest_data(self.test_path, transform=preprocess)
+                print("Load test data:", self.test)
 
         except Exception as e:
             raise e
@@ -115,6 +109,10 @@ def load_dataloader(dataset: LCCFASDataset):
         dataset.setup()
         train_loader = dataset.train_dataloader()
         val_loader = dataset.val_dataloader()
+
+        if dataset.test_path == "":
+            return train_loader, val_loader, None
+        
         test_loader = dataset.test_dataloader()
 
         return train_loader, val_loader, test_loader
