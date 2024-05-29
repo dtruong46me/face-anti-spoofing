@@ -4,6 +4,13 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 from load_data import IngestData  # Giả sử bạn đã lưu lớp IngestData trong file ingest_data.py
 
+import os, sys
+
+path = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, path)
+
+from utils import load_transform_2
+
 def visualize_data(data_loader, num_images=5):
     data_iter = iter(data_loader)
     fig, axes = plt.subplots(1, num_images, figsize=(20, 5))
@@ -29,11 +36,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_images', type=int, default=5, help='Number of images to visualize')
     args = parser.parse_args()
 
-    transform = transforms.Compose([
-        transforms.Resize([224, 224]),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
+    transform = load_transform_2()
 
     dataset = IngestData(args.datapath, transform)
     data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
