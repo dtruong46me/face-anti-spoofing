@@ -10,12 +10,12 @@ sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
 from models.resnext50 import SEResNeXT50
-from src.utils import load_transform_2, load_backbone
+from src.utils import load_transform_2, load_backbone, load_transform
 
 
 def predict_sample(args):
     # Define the preprocessing transformations
-    preprocess = load_transform_2()
+    preprocess = load_transform()
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -68,7 +68,7 @@ def predict_sample(args):
     return result
 
 def main():
-    IMAGE_NAME = "output_image.png"
+    IMAGE_NAME = "1.png"
     MODEL_NAME = "seresnext50_v0.ckpt"
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_checkpoint", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "FAS_detector", "model", MODEL_NAME)))

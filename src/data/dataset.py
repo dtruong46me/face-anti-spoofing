@@ -18,7 +18,7 @@ import argparse
 path = os.path.abspath(os.path.dirname(__name__))
 sys.path.insert(0, path)
 from data.load_data import ingest_data
-from utils import load_transform
+from utils import load_transform_2
 
 class LCCFASDataset(LightningDataModule):
     def __init__(self, args: argparse.Namespace) -> None:
@@ -61,7 +61,7 @@ class LCCFASDataset(LightningDataModule):
             #                         std=[0.229, 0.224, 0.225])
             # ])
 
-            preprocess = load_transform()
+            preprocess = load_transform_2()
 
             self.train = ingest_data(self.train_path, transform=preprocess)
             print("Load training data:", self.train)
