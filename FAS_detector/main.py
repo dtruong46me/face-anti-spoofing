@@ -15,7 +15,7 @@ from src.models.resnext50 import SEResNeXT50
 from src.utils import load_transform, load_transform_2, load_backbone
 import torch
 from PIL import Image
-preprocess = load_transform_2()
+preprocess = load_transform()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Allow GPU memory growth
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -171,7 +171,7 @@ def face_detection_with_liveness(model):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default= r"FAS_detector\model\seresnext50.ckpt")
+    parser.add_argument("--model_checkpoint", type=str, default= r"FAS_detector\model\seresnext50-v1.ckpt")
     parser.add_argument("--modelname", type=str, default="seresnext50")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)

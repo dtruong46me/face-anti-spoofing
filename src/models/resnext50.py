@@ -45,13 +45,13 @@ class SEResNeXT50(nn.Module):
 
         # Linear 1
         out = self.fc1(out)
-        self.bn1 = nn.BatchNorm1d(512)
+        out = nn.BatchNorm1d(512)
         out = self.relu1(out)
         out = self.dropout1(out)
 
         # Linear 2
         out = self.fc2(out)
-        self.bn2 = nn.BatchNorm1d(256)
+        out = nn.BatchNorm1d(256)
         out = self.relu2(out)
         out = self.dropout2(out)
 
