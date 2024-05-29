@@ -79,7 +79,7 @@ def training_pipeline(args: argparse.Namespace):
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs,
-                      callbacks=[ckpt_callback, es_callback],
+                      callbacks=[ckpt_callback],
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)
