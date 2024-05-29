@@ -68,19 +68,18 @@ def training_pipeline(args: argparse.Namespace):
     # Load callbacks
     es_callback = EarlyStopping(monitor="val/apcer", min_delta=0.00, patience=4, verbose=True, mode="min")
 
-    ckpt_path = "../checkpoint"
     ckpt_callback = ModelCheckpoint(
         dirpath='checkpoint',
         filename=args.modelname,
         save_top_k=3,
         verbose=True,
         mode='min',
-        monitor="val/apcer"
+        monitor="val/npcer"
     )
 
     # Load trainer
     trainer = Trainer(max_epochs=args.max_epochs,
-                      callbacks=[ckpt_callback],
+                      callbacks=[ckpt_callback, es_callback],
                       logger=logger)
     
     trainer.fit(model, train_loader, val_loader)
@@ -96,7 +95,7 @@ def training_pipeline(args: argparse.Namespace):
                                                 num_classes=args.num_classes)
     model.to(device)
 
-    if args.test_path != "":
+    if test_loader is not None:
         model.eval()
         apcer_metric = APCER().to(device)
         npcer_metric = NPCER().to(device)
@@ -124,6 +123,7 @@ def training_pipeline(args: argparse.Namespace):
 
         acer = acer_metric(all_preds, all_labels)
 
+        print("......................")
         print(f"Test APCER: {apcer}")
         print(f"Test NPCER: {npcer}")
         print(f"Test ACER: {acer}")
