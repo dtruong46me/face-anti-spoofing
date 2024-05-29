@@ -49,7 +49,7 @@ class FaceBoxes:
         torch.set_grad_enabled(False)
 
         net = FaceBoxesNet(phase='test', size=None, num_classes=2)  # initialize detector
-        self.net = load_model(net, pretrained_path=pretrained_path, load_to_cpu=not gpu_mode)
+        self.net = load_model(net, pretrained_path=pretrained_path, load_to_cpu=True)
         self.net.eval()
         # print('Finished loading model!')
 
