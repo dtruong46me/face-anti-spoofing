@@ -28,6 +28,7 @@ class SEResNeXT50(nn.Module):
 
         # Linear 1
         self.fc1 = nn.Linear(in_features=in_features, out_features=512)
+
         self.bn1 = nn.BatchNorm1d(512)
         self.relu1 = nn.ReLU()
         self.dropout1 = nn.Dropout(p=0.3)
