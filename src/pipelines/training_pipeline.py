@@ -15,6 +15,8 @@ sys.path.insert(0, path)
 
 from models.ln_model import load_model, ModelInterface
 from models.resnext50 import SEResNeXT50
+from models.MobileLiteNet import *
+from models.feathernet import *
 from data.dataset import load_data, load_dataloader
 
 from metrics.apcer import APCER
@@ -53,12 +55,12 @@ def training_pipeline(args: argparse.Namespace):
         backbone = SEResNeXT50(args.input_shape, args.num_classes)
     
     # Load MobileNetV2
-    if args.modelname == "mobilenetv2":
-        backbone = None
+    if args.modelname == "mobilenetv3":
+        backbone = MobileLiteNet54_se()
     
     # Load FeatherNet
     if args.modelname == "feathernet":
-        backbone = None
+        backbone = FeatherNetB()
 
     # Load model
     model = load_model(backbone=backbone,
