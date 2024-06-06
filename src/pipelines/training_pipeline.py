@@ -15,8 +15,10 @@ sys.path.insert(0, path)
 
 from models.ln_model import load_model, ModelInterface
 from models.resnext50 import SEResNeXT50
-from models.mobilenet import MobileNetV3
-from models.feathernet import FeatherNetB
+
+from models.MobileLiteNet import *
+from models.feathernet import *
+
 from data.dataset import load_data, load_dataloader
 
 from utils import load_backbone
@@ -51,8 +53,21 @@ def training_pipeline(args: argparse.Namespace):
     print(" > Device map:", device)
 
 
+    # Load SEResNeXT50
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    
+    # Load MobileNetV2
+    if args.modelname == "mobilenetv3":
+        backbone = MobileLiteNet54_se()
+    
+    # Load FeatherNet
+    if args.modelname == "feathernet":
+        backbone = FeatherNetB()
+
     # Load backbone
     backbone = load_backbone(args)
+
 
     # Load model
     model = load_model(backbone=backbone,
