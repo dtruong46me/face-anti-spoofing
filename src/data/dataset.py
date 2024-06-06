@@ -18,7 +18,7 @@ import argparse
 path = os.path.abspath(os.path.dirname(__name__))
 sys.path.insert(0, path)
 from data.load_data import ingest_data
-from utils import load_transform
+from utils import load_transform_2
 
 class LCCFASDataset(LightningDataModule):
     def __init__(self, args: argparse.Namespace) -> None:
@@ -54,20 +54,14 @@ class LCCFASDataset(LightningDataModule):
 
     def prepare_data(self) -> None:
         try:
-            # preprocess = transforms.Compose([
-            #     transforms.Resize([224, 224]),
-            #     transforms.ToTensor(),
-            #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
-            #                         std=[0.229, 0.224, 0.225])
-            # ])
-
-            preprocess = load_transform()
+            preprocess = load_transform_2()
 
             self.train = ingest_data(self.train_path, transform=preprocess)
             print("Load training data:", self.train)
 
-            self.test = ingest_data(self.test_path, transform=preprocess)
-            print("Load test data:", self.test)
+            if self.test_path != "":
+                self.test = ingest_data(self.test_path, transform=preprocess)
+                print("Load test data:", self.test)
 
         except Exception as e:
             raise e
@@ -93,15 +87,12 @@ class LCCFASDataset(LightningDataModule):
             raise e
     
     def train_dataloader(self) -> TRAIN_DATALOADERS:
-        print(" > train_dataloader()")
         return DataLoader(self.train, batch_size=self.batch_size, shuffle=True, num_workers=4)
     
     def val_dataloader(self) -> EVAL_DATALOADERS:
-        print(" > val_dataloader()")
         return DataLoader(self.val, batch_size=self.batch_size, shuffle=False, num_workers=4)
     
     def test_dataloader(self) -> EVAL_DATALOADERS:
-        print(" > test_dataloader()")
         return DataLoader(self.test, batch_size=self.batch_size, shuffle=False)
         
 def load_data(args):
@@ -118,6 +109,10 @@ def load_dataloader(dataset: LCCFASDataset):
         dataset.setup()
         train_loader = dataset.train_dataloader()
         val_loader = dataset.val_dataloader()
+
+        if dataset.test_path == "":
+            return train_loader, val_loader, None
+        
         test_loader = dataset.test_dataloader()
 
         return train_loader, val_loader, test_loader

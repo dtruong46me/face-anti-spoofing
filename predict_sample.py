@@ -10,7 +10,7 @@ sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
 from models.resnext50 import SEResNeXT50
-from src.utils import load_transform
+from src.utils import load_transform_2, load_backbone, load_transform
 
 
 def predict_sample(args):
@@ -19,14 +19,8 @@ def predict_sample(args):
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load backbone model
-    backbone = None
-    if args.modelname == "seresnext50":
-        backbone = SEResNeXT50(args.input_shape, args.num_classes)
-    if args.modelname == "mobilenetv2":
-        backbone = None
-    if args.modelname == "feathernet":
-        backbone = None
+
+    backbone = load_backbone(args)
 
     # Load model from path
     model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
@@ -74,10 +68,12 @@ def predict_sample(args):
     return result
 
 def main():
+    IMAGE_NAME = "1.png"
+    MODEL_NAME = "seresnext50_v0.ckpt"
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default="/kaggle/working/checkpoint/cvproject.ckpt")
-    parser.add_argument("--image", type=str, default="")
-    parser.add_argument("--modelname", type=str, default="")
+    parser.add_argument("--model_checkpoint", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "FAS_detector", "model", MODEL_NAME)))
+    parser.add_argument("--image", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "assets", "samples", IMAGE_NAME)))
+    parser.add_argument("--modelname", type=str, default="seresnext50")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()

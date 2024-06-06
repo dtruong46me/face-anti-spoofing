@@ -28,11 +28,19 @@ class SEResNeXT50(nn.Module):
 
         # Linear 1
         self.fc1 = nn.Linear(in_features=in_features, out_features=512)
-        self.relu =nn.ReLU()
-        self.dropout1 = nn.Dropout(p=0.2)
+
+        self.bn1 = nn.BatchNorm1d(512)
+        self.relu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(p=0.3)
+
+        # Linear 2
+        self.fc2 = nn.Linear(in_features=512, out_features=256)
+        self.bn2 = nn.BatchNorm1d(256)
+        self.relu2 = nn.ReLU()
+        self.dropout2 = nn.Dropout(p=0.3)
 
         # Classifier
-        self.classifier = nn.Linear(in_features=512, out_features=num_classes)
+        self.classifier = nn.Linear(in_features=256, out_features=num_classes)
 
     def forward(self, x: Tensor):
         out = self.resnext(x)
@@ -40,8 +48,15 @@ class SEResNeXT50(nn.Module):
 
         # Linear 1
         out = self.fc1(out)
-        out = self.relu(out)
+        out = self.bn1(out)
+        out = self.relu1(out)
         out = self.dropout1(out)
+
+        # Linear 2
+        out = self.fc2(out)
+        out = self.bn2(out)
+        out = self.relu2(out)
+        out = self.dropout2(out)
 
         # Classifier
         out = self.classifier(out)

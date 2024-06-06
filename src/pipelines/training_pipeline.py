@@ -15,9 +15,13 @@ sys.path.insert(0, path)
 
 from models.ln_model import load_model, ModelInterface
 from models.resnext50 import SEResNeXT50
+
 from models.MobileLiteNet import *
 from models.feathernet import *
+
 from data.dataset import load_data, load_dataloader
+
+from utils import load_backbone
 
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
@@ -48,7 +52,6 @@ def training_pipeline(args: argparse.Namespace):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(" > Device map:", device)
 
-    backbone = None
 
     # Load SEResNeXT50
     if args.modelname == "seresnext50":
@@ -61,6 +64,10 @@ def training_pipeline(args: argparse.Namespace):
     # Load FeatherNet
     if args.modelname == "feathernet":
         backbone = FeatherNetB()
+
+    # Load backbone
+    backbone = load_backbone(args)
+
 
     # Load model
     model = load_model(backbone=backbone,
@@ -76,14 +83,13 @@ def training_pipeline(args: argparse.Namespace):
     # Load callbacks
     es_callback = EarlyStopping(monitor="val/apcer", min_delta=0.00, patience=4, verbose=True, mode="min")
 
-    ckpt_path = "../checkpoint"
     ckpt_callback = ModelCheckpoint(
         dirpath='checkpoint',
         filename=args.modelname,
         save_top_k=3,
         verbose=True,
         mode='min',
-        monitor="val/apcer"
+        monitor="val/npcer"
     )
 
     # Load trainer
@@ -104,36 +110,38 @@ def training_pipeline(args: argparse.Namespace):
                                                 num_classes=args.num_classes)
     model.to(device)
 
-    model.eval()
-    apcer_metric = APCER().to(device)
-    npcer_metric = NPCER().to(device)
-    acer_metric = ACER().to(device)
+    if test_loader is not None:
+        model.eval()
+        apcer_metric = APCER().to(device)
+        npcer_metric = NPCER().to(device)
+        acer_metric = ACER().to(device)
 
-    all_preds = []
-    all_labels = []
+        all_preds = []
+        all_labels = []
 
-    with torch.no_grad():
-        for batch in test_loader:
-            images, labels = batch
-            images = images.to(device)
-            labels = labels.to(device)
+        with torch.no_grad():
+            for batch in test_loader:
+                images, labels = batch
+                images = images.to(device)
+                labels = labels.to(device)
 
-            outputs = model(images)
+                outputs = model(images)
 
-            all_preds.append(outputs)
-            all_labels.append(labels)
+                all_preds.append(outputs)
+                all_labels.append(labels)
 
-    all_preds = torch.cat(all_preds, dim=0)
-    all_labels = torch.cat(all_labels, dim=0)
+        all_preds = torch.cat(all_preds, dim=0)
+        all_labels = torch.cat(all_labels, dim=0)
 
-    apcer = apcer_metric(all_preds, all_labels)
-    npcer = npcer_metric(all_labels, all_labels)
+        apcer = apcer_metric(all_preds, all_labels)
+        npcer = npcer_metric(all_labels, all_labels)
 
-    acer = acer_metric(all_preds, all_labels)
+        acer = acer_metric(all_preds, all_labels)
 
-    print(f"Test APCER: {apcer}")
-    print(f"Test NPCER: {npcer}")
-    print(f"Test ACER: {acer}")
+        print("......................")
+        print(f"Test APCER: {apcer}")
+        print(f"Test NPCER: {npcer}")
+        print(f"Test ACER: {acer}")
 
 # if __name__=='__main__':
 #     parser = argparse.ArgumentParser()
