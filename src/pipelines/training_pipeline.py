@@ -10,12 +10,12 @@ import torch
 
 import wandb
 
-from models.MobileLiteNet import MobileLiteNet54_se
+from src.models.mobilenet import MobileNetV3
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from models.ln_model import load_model, ModelInterface
+from src.models.ln_model import load_model, ModelInterface
 from models.resnext50 import SEResNeXT50
 from models.ShuffleNet import ShuffleNet
 

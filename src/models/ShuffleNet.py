@@ -20,23 +20,24 @@ class ShuffleNet(nn.Module):
         return x
 
 
-if __name__ == '__main__':
-    # Step 1: Instantiate the model
-    model = ShuffleNet()
-
-    # Print model summary
-    print(summary(model, (3, 224, 224)))
-
-    # Step 2: Set device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device)
-
-    # Step 3: Create a sample input tensor
-    input_tensor = torch.randn(1, 3, 224, 224).to(device)  # Batch size of 1, 3 color channels, 224x224 image size
-
-    # Step 4: Pass the input tensor through the model
-    output = model(input_tensor)
-
-    # Step 5: Print the output tensor
-    print("Model output:", output)
-    print("Output shape:", output.shape)
+# if __name__ == '__main__':
+#     # Step 1: Instantiate the model
+#     model = ShuffleNet()
+#
+#     # Print model summary
+#     print(summary(model, (3, 224, 224)))
+#
+#     # Step 2: Set device
+#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#     model.to(device)
+#
+#     # Step 3: Create a sample input tensor
+#     input_tensor = torch.randn(1, 3, 224, 224).to(device)  # Batch size of 1, 3 color channels, 224x224 image size
+#
+#     # Step 4: Pass the input tensor through the model
+#     output = model(input_tensor)
+#
+#     # Step 5: Print the output tensor
+#     print("Model output:", output)
+#     print("Output shape:", output.shape)
+#     print(model.parameters())
