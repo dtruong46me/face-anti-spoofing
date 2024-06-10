@@ -60,14 +60,13 @@ def training_pipeline(args: argparse.Namespace):
     
     # Load MobileNetV2
     if args.modelname == "mobilenetv3":
-        backbone = MobileLiteNet54_se()
+        backbone = MobileNetV3()
     
     # Load FeatherNet
     if args.modelname == "feathernet":
         backbone = FeatherNetB()
-    if args.modelname == "shufflenet":
-        backbone = ShuffleNet()
-
+    if args.modelname == "mobilelitenet":
+        backbone = MobileLiteNet54_se()
     # Load backbone
     backbone = load_backbone(args)
 

@@ -21,7 +21,6 @@ def load_transform():
 def load_transform_2():
     return transforms.Compose([
         transforms.Resize([224,224]),
-
         transforms.ToTensor()
     ])
 
