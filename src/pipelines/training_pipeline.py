@@ -10,6 +10,8 @@ import torch
 
 import wandb
 
+from src.models.MobileLiteNet import MobileLiteNet54_se
+
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
@@ -65,6 +67,7 @@ def training_pipeline(args: argparse.Namespace):
     # Load FeatherNet
     if args.modelname == "feathernet":
         backbone = FeatherNetB()
+
     if args.modelname == "mobilelitenet":
         backbone = MobileLiteNet54_se()
     # Load backbone
