@@ -52,7 +52,7 @@ class ModelInterface(LightningModule):
         return output
     
     def configure_optimizers(self):
-        return Adam(self.parameters(), lr=5e-5, weight_decay=1e-5)
+        return Adam(self.parameters(), lr=1e-3)
 
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)

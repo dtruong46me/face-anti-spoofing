@@ -12,7 +12,6 @@ from models.mobilenet import MobileNetV3
 
 def load_transform():
     return transforms.Compose([
-        transforms.RandomEqualize(p = 1),
         transforms.Resize([224,224]),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -22,6 +21,7 @@ def load_transform():
 def load_transform_2():
     return transforms.Compose([
         transforms.Resize([224,224]),
+
         transforms.ToTensor()
     ])
 
