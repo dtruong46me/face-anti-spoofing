@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models import shufflenet_v2_x2_0
+from torchvision.models import shufflenet_v2_x2_0, ShuffleNet_V2_X2_0_Weights
 from torchsummary import summary
 
 
@@ -9,7 +9,7 @@ class ShuffleNet(nn.Module):
         super(ShuffleNet, self).__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
-        self.model = shufflenet_v2_x2_0(pretrained=True)
+        self.model = shufflenet_v2_x2_0(weights=ShuffleNet_V2_X2_0_Weights.DEFAULT)
 
         # Replace the classifier layer with a new one
         num_features = self.model.fc.in_features  # shufflenet_v2_x2_0 uses 'fc' as the classifier layer
@@ -40,3 +40,4 @@ class ShuffleNet(nn.Module):
 #     # Step 5: Print the output tensor
 #     print("Model output:", output)
 #     print("Output shape:", output.shape)
+#     print(model.parameters())
