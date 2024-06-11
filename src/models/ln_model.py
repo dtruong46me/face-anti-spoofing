@@ -6,6 +6,7 @@ from torch.optim import Adam
 import torch
 import torch.nn as nn
 from torchsummary import summary
+import torch.nn as nn
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
@@ -91,11 +92,11 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
-        # weights = [0.85, 0.15]
-        # weights = torch.FloatTensor(weights).cuda()
+        weights = [0.85, 0.15]
+        weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = nn.CrossEntropyLoss()(outputs, labels)
+        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
         return loss, outputs, labels
 
 # Load Lightning Model
