@@ -15,7 +15,7 @@ from src.utils import load_transform_2, load_backbone, load_transform
 
 def predict_sample(args):
     # Define the preprocessing transformations
-    preprocess = load_transform()
+    preprocess = load_transform_2()
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
