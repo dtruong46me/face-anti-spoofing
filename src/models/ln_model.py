@@ -97,7 +97,7 @@ class ModelInterface(LightningModule):
         # weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = sigmoid_focal_loss(images, labels, alpha=0.85, gamma=2.0, reduction="mean")
+        loss = sigmoid_focal_loss(outputs, labels, alpha=0.85, gamma=2.0, reduction="mean")
         # loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
 

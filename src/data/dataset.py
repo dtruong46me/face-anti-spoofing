@@ -110,8 +110,8 @@ def load_dataloader(dataset: LCCFASDataset):
         train_loader = dataset.train_dataloader()
         val_loader = dataset.val_dataloader()
 
-        if dataset.test_path == "":
-            return train_loader, val_loader, None
+        # if dataset.test_path == "":
+        #     return train_loader, val_loader, None
         
         test_loader = dataset.test_dataloader()
 

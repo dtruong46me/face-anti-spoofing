@@ -74,7 +74,7 @@ def training_pipeline(args: argparse.Namespace):
         save_top_k=3,
         verbose=True,
         mode='min',
-        monitor="val/npcer"
+        monitor="val/acer"
     )
 
     # Load trainer
