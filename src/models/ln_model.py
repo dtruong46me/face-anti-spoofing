@@ -98,7 +98,7 @@ class ModelInterface(LightningModule):
 
         outputs = self.forward(images)
         loss = sigmoid_focal_loss(images, labels, alpha=0.85, gamma=2.0, reduction="mean")
-        loss = nn.CrossEntropyLoss()(outputs, labels)
+        # loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
 
 # Load Lightning Model
