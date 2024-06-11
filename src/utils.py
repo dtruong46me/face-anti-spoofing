@@ -3,6 +3,8 @@ import argparse
 
 import os, sys
 
+from src.models.ShuffleNet import ShuffleNet
+
 path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
 
@@ -38,6 +40,9 @@ def load_backbone(args: argparse.Namespace):
     # Load FeatherNet
     if args.modelname == "feathernet":
         return FeatherNetB()
+
+    if args.modelname == "shufflenet":
+        return ShuffleNet()
     
 
 def load_argparser():

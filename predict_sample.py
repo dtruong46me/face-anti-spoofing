@@ -67,19 +67,19 @@ def predict_sample(args):
 
     return result
 
-def main():
-    IMAGE_NAME = "1.png"
-    MODEL_NAME = "seresnext50_v0.ckpt"
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "FAS_detector", "model", MODEL_NAME)))
-    parser.add_argument("--image", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "assets", "samples", IMAGE_NAME)))
-    parser.add_argument("--modelname", type=str, default="seresnext50")
-    parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
-    parser.add_argument("--num_classes", type=int, default=2)
-    args = parser.parse_args()
-
-    result = predict_sample(args)
-    print(result)
-
-if __name__=="__main__":
-    main()
+# def main():
+#     IMAGE_NAME = "1.png"
+#     MODEL_NAME = "seresnext50_v0.ckpt"
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--model_checkpoint", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "FAS_detector", "model", MODEL_NAME)))
+#     parser.add_argument("--image", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "assets", "samples", IMAGE_NAME)))
+#     parser.add_argument("--modelname", type=str, default="seresnext50")
+#     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
+#     parser.add_argument("--num_classes", type=int, default=2)
+#     args = parser.parse_args()
+#
+#     result = predict_sample(args)
+#     print(result)
+#
+# if __name__=="__main__":
+#     main()
