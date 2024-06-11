@@ -7,6 +7,8 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 
+from torchvision.ops.focal_loss import sigmoid_focal_loss
+
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
@@ -95,6 +97,7 @@ class ModelInterface(LightningModule):
         # weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
+        loss = sigmoid_focal_loss(images, labels, alpha=0.85, gamma=2.0, reduction="mean")
         loss = nn.CrossEntropyLoss()(outputs, labels)
         return loss, outputs, labels
 
