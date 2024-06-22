@@ -92,11 +92,19 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
-        weights = [1, 0.0]
-        weights = torch.FloatTensor(weights).cuda()
+        #weights = [1, 0.0]
+        #weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+        class_counts = torch.bincount(labels.squeeze().long())
+        weight = 1.0 / class_counts.float()
+
+        # Tạo hàm loss với trọng số
+        loss_fn = nn.CrossEntropyLoss(weight=weight)
+
+        # Tính toán loss
+        loss = loss_fn(outputs, labels.long())
+        #loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
         return loss, outputs, labels
 
 # Load Lightning Model
