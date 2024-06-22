@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 import torch.nn as nn
-import torch.nn.functional as F
+
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
@@ -25,32 +25,7 @@ from metrics.recall import MyRecall
  / /  / / /_/ / /_/ /  __/ /  _/ // / / / /_/  __/ /  / __/ /_/ / /__/  __/
 /_/  /_/\____/\__,_/\___/_/  /___/_/ /_/\__/\___/_/  /_/  \__,_/\___/\___/ 
 """
-class FocalLoss(nn.Module):
-    def __init__(self, alpha=None, gamma=2, reduction='mean'):
-        super(FocalLoss, self).__init__()
-        self.alpha = alpha
-        self.gamma = gamma
-        self.reduction = reduction
 
-    def forward(self, inputs, targets):
-        ce_loss = F.cross_entropy(inputs, targets, reduction='none')
-        pt = torch.exp(-ce_loss)
-        focal_loss = ((1 - pt) ** self.gamma) * ce_loss
-
-        if self.alpha is not None:
-            if inputs.dim() > 1:
-                alpha = self.alpha[targets.data.view(-1)]
-            else:
-                alpha = self.alpha[targets.data]
-            focal_loss = focal_loss * alpha
-
-        if self.reduction == 'mean':
-            return focal_loss.mean()
-        elif self.reduction == 'sum':
-            return focal_loss.sum()
-        else:
-            return focal_loss
-        
 class ModelInterface(LightningModule):
     def __init__(self, model, input_shape, num_classes):
         super().__init__()
@@ -113,7 +88,6 @@ class ModelInterface(LightningModule):
         _, preds = torch.max(outputs.data, 1)
         return preds
     
-
     def _common_step(self, batch, batch_idx):
         images, labels = batch
         labels = labels.squeeze(0).float()
@@ -122,9 +96,10 @@ class ModelInterface(LightningModule):
         weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = FocalLoss(alpha=weights)(outputs, labels)
-
-        return loss, outputs, labels
+        ce_loss  = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+        pt = torch.exp(-ce_loss)
+        focal_loss = ((1 - pt) ** 2 * ce_loss).mean()
+        return focal_loss, outputs, labels
 
 # Load Lightning Model
 def load_model(backbone, input_shape, num_classes):
