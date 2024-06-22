@@ -25,7 +25,32 @@ from metrics.recall import MyRecall
  / /  / / /_/ / /_/ /  __/ /  _/ // / / / /_/  __/ /  / __/ /_/ / /__/  __/
 /_/  /_/\____/\__,_/\___/_/  /___/_/ /_/\__/\___/_/  /_/  \__,_/\___/\___/ 
 """
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=None, gamma=2, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduction = reduction
 
+    def forward(self, inputs, targets):
+        ce_loss = F.cross_entropy(inputs, targets, reduction='none')
+        pt = torch.exp(-ce_loss)
+        focal_loss = ((1 - pt) ** self.gamma) * ce_loss
+
+        if self.alpha is not None:
+            if inputs.dim() > 1:
+                alpha = self.alpha[targets.data.view(-1)]
+            else:
+                alpha = self.alpha[targets.data]
+            focal_loss = focal_loss * alpha
+
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        else:
+            return focal_loss
+        
 class ModelInterface(LightningModule):
     def __init__(self, model, input_shape, num_classes):
         super().__init__()
@@ -87,18 +112,7 @@ class ModelInterface(LightningModule):
         outputs = self.forward(images)
         _, preds = torch.max(outputs.data, 1)
         return preds
-    def focal_loss(self, outputs, labels, alpha=[0.85, 0.15], gamma=2.0):
-        alpha = torch.tensor(alpha).to(outputs.device)
-        
-        # Ensure labels are int64
-        labels_int64 = labels.long()
-        
-        BCE_loss = F.cross_entropy(outputs, labels_int64, reduction='none')
-        pt = torch.exp(-BCE_loss)
-        
-        alpha_t = alpha.gather(0, labels_int64.view(-1))
-        F_loss = alpha_t * (1 - pt) ** gamma * BCE_loss
-        return F_loss.mean()
+    
 
     def _common_step(self, batch, batch_idx):
         images, labels = batch
@@ -108,8 +122,8 @@ class ModelInterface(LightningModule):
         weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        #loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
-        loss = self.focal_loss(outputs, labels, alpha=[0.85, 0.15])
+        loss = FocalLoss(alpha=weights)(outputs, labels)
+
         return loss, outputs, labels
 
 # Load Lightning Model
