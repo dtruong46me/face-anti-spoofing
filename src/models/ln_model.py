@@ -92,7 +92,7 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
-        weights = [0.15, 0.85]
+        weights = [1, 0.0]
         weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
