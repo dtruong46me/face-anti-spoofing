@@ -117,35 +117,35 @@ def training_pipeline(args: argparse.Namespace):
                                                 num_classes=args.num_classes)
     model.to(device)
 
-    if test_loader is not None:
-        model.eval()
-        apcer_metric = APCER().to(device)
-        npcer_metric = NPCER().to(device)
-        acer_metric = ACER().to(device)
 
-        all_preds = []
-        all_labels = []
+    model.eval()
+    apcer_metric = APCER().to(device)
+    npcer_metric = NPCER().to(device)
+    acer_metric = ACER().to(device)
 
-        with torch.no_grad():
-            for batch in test_loader:
-                images, labels = batch
-                images = images.to(device)
-                labels = labels.to(device)
+    all_preds = []
+    all_labels = []
 
-                outputs = model(images)
+    with torch.no_grad():
+        for batch in test_loader:
+            images, labels = batch
+            images = images.to(device)
+            labels = labels.to(device)
 
-                all_preds.append(outputs)
-                all_labels.append(labels)
+            outputs = model(images)
 
-        all_preds = torch.cat(all_preds, dim=0)
-        all_labels = torch.cat(all_labels, dim=0)
+            all_preds.append(outputs)
+            all_labels.append(labels)
 
-        apcer = apcer_metric(all_preds, all_labels)
-        npcer = npcer_metric(all_labels, all_labels)
+    all_preds = torch.cat(all_preds, dim=0)
+    all_labels = torch.cat(all_labels, dim=0)
 
-        acer = acer_metric(all_preds, all_labels)
+    apcer = apcer_metric(all_preds, all_labels)
+    npcer = npcer_metric(all_labels, all_labels)
 
-        print("......................")
-        print(f"Test APCER: {apcer}")
-        print(f"Test NPCER: {npcer}")
-        print(f"Test ACER: {acer}")
+    acer = acer_metric(all_preds, all_labels)
+
+    print("......................")
+    print(f"Test APCER: {apcer}")
+    print(f"Test NPCER: {npcer}")
+    print(f"Test ACER: {acer}")
