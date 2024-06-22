@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 import torch.nn as nn
-
+import torch.nn.functional as F
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
@@ -88,6 +88,14 @@ class ModelInterface(LightningModule):
         _, preds = torch.max(outputs.data, 1)
         return preds
     
+    def focal_loss(self, outputs, labels, alpha=[0.25, 0.75], gamma=2.0):
+        alpha = torch.tensor(alpha).to(outputs.device)
+        BCE_loss = F.cross_entropy(outputs, labels, reduction='none')
+        pt = torch.exp(-BCE_loss)
+        alpha_t = alpha.gather(0, labels.data.view(-1))
+        F_loss = alpha_t * (1 - pt) ** gamma * BCE_loss
+        return F_loss.mean()
+
     def _common_step(self, batch, batch_idx):
         images, labels = batch
         labels = labels.squeeze(0).float()
@@ -96,7 +104,8 @@ class ModelInterface(LightningModule):
         weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+        #loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+        loss = self.focal_loss(outputs, labels, alpha=[0.85, 0.15])
         return loss, outputs, labels
 
 # Load Lightning Model
