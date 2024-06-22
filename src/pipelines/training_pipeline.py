@@ -88,7 +88,7 @@ def training_pipeline(args: argparse.Namespace):
     logger = WandbLogger(name=args.wandb_runname, project="cv-project")
 
     # Load callbacks
-    es_callback = EarlyStopping(monitor="val/acer", min_delta=0.00, patience=5, verbose=True, mode="min")
+    es_callback = EarlyStopping(monitor="val/loss", min_delta=0.00, patience=5, verbose=True, mode="min")
 
     ckpt_callback = ModelCheckpoint(
         dirpath='checkpoint',
