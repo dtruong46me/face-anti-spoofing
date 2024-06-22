@@ -10,13 +10,6 @@ from models.feathernet import FeatherNetB
 from models.resnext50 import SEResNeXT50
 from models.mobilenet import MobileNetV3
 
-def load_transform():
-    return transforms.Compose([
-        transforms.Resize([224,224]),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225])
-    ])
 
 def load_transform_2():
     return transforms.Compose([
