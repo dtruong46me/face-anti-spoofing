@@ -14,7 +14,7 @@ sys.path.insert(0, path)
 from src.models.ln_model import ModelInterface
 from src.models.resnext50 import SEResNeXT50
 from data.load_data import ingest_data
-from utils import load_transform, load_backbone
+from utils import load_transform_2, load_backbone
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
 from metrics.acer import ACER
@@ -29,7 +29,7 @@ class DataTestFAS(LightningDataModule):
 
     def prepare_data(self) -> None:
         try:
-            preprocess = load_transform()
+            preprocess = load_transform_2()
 
             self.test = ingest_data(self.test_path, transform=preprocess)
 

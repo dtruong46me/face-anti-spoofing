@@ -96,7 +96,9 @@ class ModelInterface(LightningModule):
         weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
+
         loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+
         return loss, outputs, labels
 
 # Load Lightning Model

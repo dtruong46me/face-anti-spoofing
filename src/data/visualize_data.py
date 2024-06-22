@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 #sys.path.insert(0, path)
 
-from src.utils import load_transform_2
+from utils import load_transform_2
 
 def visualize_data(data_loader, num_images=5):
     data_iter = iter(data_loader)
