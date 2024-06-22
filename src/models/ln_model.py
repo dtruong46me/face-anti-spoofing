@@ -40,8 +40,8 @@ class FocalLoss(nn.Module):
         if self.alpha is not None:
             if inputs.is_cuda:
                 self.alpha = self.alpha.cuda(inputs.device.index)
-            alpha = self.alpha[targets]
-            focal_loss = alpha * focal_loss
+            alpha = torch.gather(self.alpha, 0, targets.view(-1).unsqueeze(1))
+            focal_loss = alpha.squeeze(1) * focal_loss
         
         if self.reduction == 'mean':
             return torch.mean(focal_loss)
