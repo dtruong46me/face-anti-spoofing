@@ -5,9 +5,9 @@ from torch.utils.data import DataLoader
 from load_data import IngestData  # Giả sử bạn đã lưu lớp IngestData trong file ingest_data.py
 
 import os, sys
-
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, path)
+#sys.path.insert(0, path)
 
 from utils import load_transform_2
 
