@@ -87,14 +87,14 @@ class ModelInterface(LightningModule):
         outputs = self.forward(images)
         _, preds = torch.max(outputs.data, 1)
         return preds
-    
     def focal_loss(self, outputs, labels, alpha=[0.85, 0.15], gamma=2.0):
         alpha = torch.tensor(alpha).to(outputs.device)
-        BCE_loss = F.cross_entropy(outputs, labels, reduction='none')
-        pt = torch.exp(-BCE_loss)
         
-        # Convert labels to int64
+        # Ensure labels are int64
         labels_int64 = labels.long()
+        
+        BCE_loss = F.cross_entropy(outputs, labels_int64, reduction='none')
+        pt = torch.exp(-BCE_loss)
         
         alpha_t = alpha.gather(0, labels_int64.view(-1))
         F_loss = alpha_t * (1 - pt) ** gamma * BCE_loss
