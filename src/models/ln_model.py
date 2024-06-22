@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 import torch.nn as nn
-import torch.nn.functional as F
+
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
@@ -25,31 +25,7 @@ from metrics.recall import MyRecall
  / /  / / /_/ / /_/ /  __/ /  _/ // / / / /_/  __/ /  / __/ /_/ / /__/  __/
 /_/  /_/\____/\__,_/\___/_/  /___/_/ /_/\__/\___/_/  /_/  \__,_/\___/\___/ 
 """
-class FocalLoss(nn.Module):
-    def __init__(self, gamma=2, alpha=None, reduction='mean'):
-        super(FocalLoss, self).__init__()
-        self.gamma = gamma
-        self.alpha = alpha
-        self.reduction = reduction
 
-    def forward(self, inputs, targets):
-        ce_loss = F.cross_entropy(inputs, targets, reduction='none')
-        pt = torch.exp(-ce_loss)
-        focal_loss = (1 - pt)**self.gamma * ce_loss
-        
-        if self.alpha is not None:
-            if inputs.is_cuda:
-                self.alpha = self.alpha.cuda(inputs.device.index)
-            alpha = torch.gather(self.alpha, 0, targets.view(-1).unsqueeze(1))
-            focal_loss = alpha.squeeze(1) * focal_loss
-        
-        if self.reduction == 'mean':
-            return torch.mean(focal_loss)
-        elif self.reduction == 'sum':
-            return torch.sum(focal_loss)
-        else:
-            return focal_loss
-        
 class ModelInterface(LightningModule):
     def __init__(self, model, input_shape, num_classes):
         super().__init__()
@@ -71,7 +47,7 @@ class ModelInterface(LightningModule):
         self.val_recall = MyRecall()
 
         self.backbone = model
-    
+
     def forward(self, x: torch.Tensor):
         output = self.backbone(x)
         return output
@@ -116,13 +92,11 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
-        #weights = [0.85, 0.15]
-        #weights = torch.FloatTensor(weights).cuda()
+        weights = [0.85, 0.15]
+        weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        #loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
-        focal_loss = FocalLoss(gamma=2, alpha=torch.FloatTensor([0.85, 0.15]))
-        loss = focal_loss(outputs, labels)
+        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
         return loss, outputs, labels
 
 # Load Lightning Model
