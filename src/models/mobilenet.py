@@ -17,7 +17,7 @@ class MobileNetV3(nn.Module):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
-        self.model = mobilenet_v3_large(weights=None, num_classes=num_classes)
+        self.model = mobilenet_v3_small(embedding_dim=256, width_mult=0.75, weight ='./pretrained/mobilenetv3-small-0.75-86c972c3.pth')
 
 
     def forward(self, x):
