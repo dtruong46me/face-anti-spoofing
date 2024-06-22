@@ -17,7 +17,7 @@ class MobileNetV3(nn.Module):
         super().__init__()
         self.input_shape = input_shape
         self.num_classes = num_classes
-        self.model = mobilenet_v3_large(pretrained=False, num_classes=num_classes)
+        self.model = mobilenet_v3_large(weights=None)
 
         num_features = self.model.classifier[3].in_features
         self.model.classifier[3] = nn.Linear(in_features=num_features, out_features=num_classes)
