@@ -198,7 +198,7 @@ python /kaggle/working/face-anti-spoofing/predict_sample.py \
 end_time=$(date +%s)
 execution_time=$(($end_time - $start_time))
 echo ""
-echo "[+] Inference time: $execution_time s.'
+echo "[+] Inference time: $execution_time s."
 
 echo "............................................"
 echo "[+] MobileNet Predict sample"
@@ -210,7 +210,7 @@ python /kaggle/working/face-anti-spoofing/predict_sample.py \
 end_time=$(date +%s)
 execution_time=$(($end_time - $start_time))
 echo ""
-echo "[+] Inference time: $execution_time s.'
+echo "[+] Inference time: $execution_time s."
 
 echo "............................................"
 echo "[+] Featernet Predict sample"
@@ -222,7 +222,7 @@ python /kaggle/working/face-anti-spoofing/predict_sample.py \
 end_time=$(date +%s)
 execution_time=$(($end_time - $start_time))
 echo ""
-echo "[+] Inference time: $execution_time s.'
+echo "[+] Inference time: $execution_time s."
 
 
 echo "............................................"
