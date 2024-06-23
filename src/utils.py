@@ -3,15 +3,14 @@ import argparse
 
 import os, sys
 
-from src.models.ShuffleNet import ShuffleNet
-
 path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
+
 
 from models.feathernet import FeatherNetB
 from models.resnext50 import SEResNeXT50
 from models.mobilenet import MobileNetV3
-
+from models.ShuffleNet import ShuffleNet
 
 def load_transform_2():
     return transforms.Compose([
