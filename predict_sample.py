@@ -10,7 +10,7 @@ sys.path.insert(0, path)
 
 from src.models.ln_model import ModelInterface
 from src.models.resnext50 import SEResNeXT50
-from src.utils import load_transform_2, load_backbone, load_transform
+from src.utils import load_transform_2, load_backbone
 
 
 def predict_sample(args):
