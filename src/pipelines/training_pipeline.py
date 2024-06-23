@@ -111,17 +111,18 @@ def training_pipeline(args: argparse.Namespace):
     print(f"Best model saved at: {best_model_path}")
 
     # Load model from path
-    model = ModelInterface.load_from_checkpoint(checkpoint_path=best_model_path, 
+    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
                                                 model=backbone,
                                                 input_shape=args.input_shape, 
                                                 num_classes=args.num_classes)
     model.to(device)
 
-
     model.eval()
     apcer_metric = APCER().to(device)
     npcer_metric = NPCER().to(device)
     acer_metric = ACER().to(device)
+    accuracy = MyAccuracy().to(device)
+    recall = MyRecall().to(device)
 
     all_preds = []
     all_labels = []
@@ -140,12 +141,39 @@ def training_pipeline(args: argparse.Namespace):
     all_preds = torch.cat(all_preds, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
 
+    total_image = all_labels.shape[0]
+    positive_image = torch.sum(torch.argmax(all_labels, dim=1)).float()
+    negative_image = (total_image - positive_image).float()
+
     apcer = apcer_metric(all_preds, all_labels)
-    npcer = npcer_metric(all_labels, all_labels)
-
+    npcer = npcer_metric(all_preds, all_labels)
     acer = acer_metric(all_preds, all_labels)
+    acc = accuracy(all_preds, all_labels)
+    rec = recall(all_preds, all_labels)
 
-    print("......................")
+    print("+++++++++++++++++++++++++")
     print(f"Test APCER: {apcer}")
     print(f"Test NPCER: {npcer}")
     print(f"Test ACER: {acer}")
+    print(f"Test Accuracy: {acc}")
+    print(f"Test Recall: {rec}")
+
+    true_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==1)).float()
+    true_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==0)).float()
+    false_pos = torch.sum((torch.argmax(all_preds, dim=1)==1) & (torch.argmax(all_labels, dim=1)==0)).float()
+    false_neg = torch.sum((torch.argmax(all_preds, dim=1)==0) & (torch.argmax(all_labels, dim=1)==1)).float()
+
+    true_pos = int(true_pos.item())
+    true_neg = int(true_neg.item())
+    false_pos = int(false_pos.item())
+    false_neg = int(false_neg.item())
+
+    print("+++++++++++++++++++++++++")
+    print("[+] Total test images:", total_image)
+    print("[+] Positive - Fake [1]:", int(positive_image.item())
+    print("[+] Negative - Real [0]:", int(negative_image.item())
+    print("+TP:", true_pos, 
+          "\n+TN:", true_neg,
+          "\n+FP:", false_pos,
+          "\n+FN:", false_neg)
+ 
