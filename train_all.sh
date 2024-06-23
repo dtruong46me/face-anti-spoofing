@@ -47,7 +47,6 @@ seconds=$((execution_time % 60))
 echo ""
 echo "[+] Training time: ${hours}h ${minutes}m ${seconds}s"
 
-
 echo "............................................"
 echo "[+] Train MobileNetV3"
 start_time=$(date +%s)
@@ -67,7 +66,6 @@ minutes=$((execution_time % 3600 // 60))
 seconds=$((execution_time % 60))
 echo ""
 echo "[+] Training time: ${hours}h ${minutes}m ${seconds}s"
-
 
 echo "............................................"
 echo "[+] Train FeatherNet"
@@ -106,9 +104,6 @@ seconds=$((execution_time % 60))
 echo ""
 echo "[+] Evaluation time: ${hours}h ${minutes}m ${seconds}s"
 
-
-
-
 echo "............................................"
 echo "[+] Eval MobileNetV3 on LCC_FASD_development"
 start_time=$(date +%s)
@@ -125,9 +120,8 @@ seconds=$((execution_time % 60))
 echo ""
 echo "[+] Evaluation time: ${hours}h ${minutes}m ${seconds}s"
 
-
 echo "............................................"
-echo "[+] Eval SE FeatherNet on LCC_FASD_development"
+echo "[+] Eval FeatherNet on LCC_FASD_development"
 start_time=$(date +%s)
 python /kaggle/working/face-anti-spoofing/run_evaluation.py\
 --test_path "/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_development"\
@@ -143,8 +137,9 @@ echo ""
 echo "[+] Evaluation time: ${hours}h ${minutes}m ${seconds}s"
 
 
+
 echo "............................................"
-echo "[+] Eval SE ResNet50 on LCC_FASD_evaluation"
+echo "[+] Eval ResNet50 on LCC_FASD_evaluation"
 start_time=$(date +%s)
 python /kaggle/working/face-anti-spoofing/run_evaluation.py\
 --test_path "/kaggle/input/lcc-fasd/LCC_FASD/LCC_FASD_evaluation"\
@@ -158,8 +153,6 @@ minutes=$((execution_time % 3600 // 60))
 seconds=$((execution_time % 60))
 echo ""
 echo "[+] Evaluation time: ${hours}h ${minutes}m ${seconds}s"
-
-
 
 echo "............................................"
 echo "[+] Eval MobileNetV3 on LCC_FASD_evaluation"
@@ -176,7 +169,6 @@ minutes=$((execution_time % 3600 // 60))
 seconds=$((execution_time % 60))
 echo ""
 echo "[+] Evaluation time: ${hours}h ${minutes}m ${seconds}s"
-
 
 echo "............................................"
 echo "[+] Eval FeatherNet on LCC_FASD_evaluation"
@@ -197,7 +189,7 @@ echo "[+] Evaluation time: ${hours}h ${minutes}m ${seconds}s"
 
 
 echo "............................................"
-echo "[+] RestNext Predict sample"
+echo "[+] RestNext50 Predict sample"
 start_time=$(date +%s)
 python /kaggle/working/face-anti-spoofing/predict_sample.py\
 --model_checkpoint "/kaggle/working/checkpoint/seresnext50.ckpt"\
@@ -206,9 +198,7 @@ python /kaggle/working/face-anti-spoofing/predict_sample.py\
 end_time=$(date +%s)
 execution_time = $(($end_time - $start_time))
 echo ""
-echo "[+] Evaluation time: $execution_time seconds."
-
-
+echo "[+] Inference time: $execution_time seconds."
 
 echo "............................................"
 echo "[+] Predict sample"
@@ -220,9 +210,7 @@ python /kaggle/working/face-anti-spoofing/predict_sample.py\
 end_time=$(date +%s)
 execution_time = $(($end_time - $start_time))
 echo ""
-echo "[+] Evaluation time: $execution_time seconds."
-
-
+echo "[+] Inference time: $execution_time seconds."
 
 echo "............................................"
 echo "[+] Featernet Predict sample"
@@ -234,7 +222,7 @@ python /kaggle/working/face-anti-spoofing/predict_sample.py\
 end_time=$(date +%s)
 execution_time = $(($end_time - $start_time))
 echo ""
-echo "[+] Evaluation time: $execution_time seconds."
+echo "[+] Inference time: $execution_time seconds."
 
 
 echo "............................................"
