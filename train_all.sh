@@ -20,7 +20,7 @@ python "/kaggle/working/face-anti-spoofing/src/data/visualize_data.py" \
 --batch_size 32 \
 --num_images 5
 
-echo "[+] Saved at: /kaggle/working/face-anti-spoofing/visualize_images.jpg"
+echo "[+] Saved at: /kaggle/working/visualize_images.jpg"
 end_time=$(date +%s)
 execution_time=$(($end_time - $start_time))
 echo ""
