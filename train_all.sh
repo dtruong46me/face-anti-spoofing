@@ -201,7 +201,7 @@ echo ""
 echo "[+] Inference time: $execution_time s.'
 
 echo "............................................"
-echo "[+] Predict sample"
+echo "[+] MobileNet Predict sample"
 start_time=$(date +%s)
 python /kaggle/working/face-anti-spoofing/predict_sample.py \
 --model_checkpoint "/kaggle/working/checkpoint/mobilenetv3.ckpt" \
