@@ -30,6 +30,8 @@ from utils import load_backbone
 from metrics.apcer import APCER
 from metrics.npcer import NPCER
 from metrics.acer import ACER
+from metrics.accuracy import MyAccuracy
+from metrics.recall import MyRecall
 
 
 """
