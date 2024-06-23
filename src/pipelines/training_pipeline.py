@@ -111,7 +111,7 @@ def training_pipeline(args: argparse.Namespace):
     print(f"Best model saved at: {best_model_path}")
 
     # Load model from path
-    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
+    model = ModelInterface.load_from_checkpoint(best_model_path, 
                                                 model=backbone,
                                                 input_shape=args.input_shape, 
                                                 num_classes=args.num_classes)
