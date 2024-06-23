@@ -170,8 +170,8 @@ def training_pipeline(args: argparse.Namespace):
 
     print("+++++++++++++++++++++++++")
     print("[+] Total test images:", total_image)
-    print("[+] Positive - Fake [1]:", int(positive_image.item())
-    print("[+] Negative - Real [0]:", int(negative_image.item())
+    print("[+] Positive - Fake [1]:", int(positive_image.item()))
+    print("[+] Negative - Real [0]:", int(negative_image.item()))
     print("+TP:", true_pos, 
           "\n+TN:", true_neg,
           "\n+FP:", false_pos,
