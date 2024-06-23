@@ -6,8 +6,7 @@ from torch.optim import Adam
 import torch
 import torch.nn as nn
 from torchsummary import summary
-
-from torchvision.ops.focal_loss import sigmoid_focal_loss
+import torch.nn as nn
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
@@ -54,7 +53,7 @@ class ModelInterface(LightningModule):
         return output
     
     def configure_optimizers(self):
-        return Adam(self.parameters(), lr=5e-5, weight_decay=1e-5)
+        return Adam(self.parameters(), lr=1e-3)
 
     def training_step(self, batch, batch_idx):
         loss, outputs, labels = self._common_step(batch, batch_idx)
@@ -93,12 +92,13 @@ class ModelInterface(LightningModule):
         images, labels = batch
         labels = labels.squeeze(0).float()
 
-        # weights = [0.85, 0.15]
-        # weights = torch.FloatTensor(weights).cuda()
+        weights = [0.85, 0.15]
+        weights = torch.FloatTensor(weights).cuda()
 
         outputs = self.forward(images)
-        loss = sigmoid_focal_loss(outputs, labels, alpha=0.85, gamma=2.0, reduction="mean")
-        # loss = nn.CrossEntropyLoss()(outputs, labels)
+
+        loss = nn.CrossEntropyLoss(weight=weights)(outputs, labels)
+
         return loss, outputs, labels
 
 # Load Lightning Model

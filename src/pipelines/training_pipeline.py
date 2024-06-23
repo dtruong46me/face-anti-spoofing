@@ -10,13 +10,19 @@ import torch
 
 import wandb
 
+from src.models.feathernet import FeatherNetB
+from src.models.mobilenet import MobileNetV3
+
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, path)
 
-from models.ln_model import load_model, ModelInterface
-from models.resnext50 import SEResNeXT50
-from models.mobilenet import MobileNetV3
-from models.feathernet import FeatherNetB
+from src.models.ln_model import load_model, ModelInterface
+from src.models.resnext50 import SEResNeXT50
+from src.models.ShuffleNet import ShuffleNet
+
+from models.MobileLiteNet import *
+from models.feathernet import *
+
 from data.dataset import load_data, load_dataloader
 
 from utils import load_backbone
@@ -51,8 +57,24 @@ def training_pipeline(args: argparse.Namespace):
     print(" > Device map:", device)
 
 
+    # Load SEResNeXT50
+    if args.modelname == "seresnext50":
+        backbone = SEResNeXT50(args.input_shape, args.num_classes)
+    
+    # Load MobileNetV2
+    if args.modelname == "mobilenetv3":
+        backbone = MobileNetV3()
+    
+    # Load FeatherNet
+    if args.modelname == "feathernet":
+        backbone = FeatherNetB()
+
+    if args.modelname == "shufflenet":
+        backbone = ShuffleNet()
+
     # Load backbone
     backbone = load_backbone(args)
+
 
     # Load model
     model = load_model(backbone=backbone,

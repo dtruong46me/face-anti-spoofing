@@ -186,19 +186,19 @@ def MobileLiteNet156_se(**kwargs):
     model = MobileLiteNet(InvertedResidual, [4, 8, 36, 3], num_classes=2, se=True, **kwargs)
     return model
 
-if __name__ == '__main__':
-    model = MobileLiteNet54_se()
-    summary(model, (3, 224, 224))
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    model.to(device)
-    # Step 2: Create a sample input tensor
-    input_tensor = torch.randn(1, 3, 224, 224).to(device)  # Batch size of 1, 3 color channels, 224x224 image size
-
-    # Step 3: Pass the input tensor through the model
-    output = model(input_tensor)
-
-    # Step 4: Print the output tensor
-    print("Model output:", output)
-    print("Output shape:", output.shape)
+# if __name__ == '__main__':
+#     model = MobileLiteNet54_se()
+#     summary(model, (3, 224, 224))
+#
+#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#
+#     model.to(device)
+#     # Step 2: Create a sample input tensor
+#     input_tensor = torch.randn(1, 3, 224, 224).to(device)  # Batch size of 1, 3 color channels, 224x224 image size
+#
+#     # Step 3: Pass the input tensor through the model
+#     output = model(input_tensor)
+#
+#     # Step 4: Print the output tensor
+#     print("Model output:", output)
+#     print("Output shape:", output.shape)
