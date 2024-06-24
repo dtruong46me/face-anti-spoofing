@@ -70,14 +70,17 @@ You can follow scipts in the notebook: https://www.kaggle.com/code/dtruon46/mast
 
 You can download weights of models (`.ckpt` file) and put it into the `/face-anti-spoofing/FAS_detector/model/your_model.ckpt`. Put your test image in the `/face-anti-spoofing/assets/samples/your_images.jpg`
 
-- ResNeXT50: https://www.kaggle.com/models/dtruon46/resnext50-face-anti-spoofing (106Mb)
-- MobileNetV3: https://www.kaggle.com/models/dtruon46/mobilenetv3-face-anti-spoofing (28MB)
-- FeatherNet: https://www.kaggle.com/models/dtruon46/feathernet-face-anti-spoofing (4.3MB)
+- ResNeXT50: [Weights](https://www.kaggle.com/models/dtruon46/resnext50-face-anti-spoofing) (106Mb)
+- MobileNetV3: [Weights](https://www.kaggle.com/models/dtruon46/mobilenetv3-face-anti-spoofing) (28MB)
+- FeatherNet: [Weights](https://www.kaggle.com/models/dtruon46/feathernet-face-anti-spoofing) (4.3MB)
 
 Then run the scripts
 
 ```
-python predict_sample.py
+python predict_sample.py \
+--model_checkpoint "your_model.ckpt" \
+--image "your_test_image.jpg"\
+--modelname "seresnext50"
 ```
 
 
