@@ -12,7 +12,7 @@ sys.path.insert(0, parent_dir)
 
 from src.models.ln_model import ModelInterface
 from src.models.resnext50 import SEResNeXT50
-from src.utils import load_transform, load_transform_2, load_backbone
+from src.utils import  load_transform_2, load_backbone
 import torch
 from PIL import Image
 preprocess = load_transform_2()
@@ -130,53 +130,15 @@ def face_detection_with_liveness_check(model):
     video.release()
     cv2.destroyAllWindows()
 
-def face_detection_with_liveness(model):
-    # Initialize video stream
-    video = cv2.VideoCapture(0)
-    while True:
-        if not video.isOpened():
-            print("[ERROR] Cannot find webcam")
-            pass
-
-        # Read frame from webcam
-        ret, frame = video.read()
-
-        # Call face detector to obtain face image
-        frame_bgr = frame[..., ::-1]
-        boxes = face_detector(np.array(frame_bgr))
-
-        # Check if face is present
-        n = len(boxes)
-        if n == 0:
-            cv2.putText(frame, "Faces: %s" % (n), (500, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 200), 2)
-        else:
-            cv2.putText(frame, "Faces: %s" % (n), (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 200), 2)
-            face_image = VideoUtils.get_liveness_score(frame, boxes)
-            liveness_score = (np.round(model.predict(face_image)[:, 1].tolist()[0], 3))
-            cv2.putText(frame, "Liveness: %s" % liveness_score, (20, 30), cv2.FONT_HERSHEY_DUPLEX,0.7, (0, 0, 200) if liveness_score < 0.7 else (0, 200, 0), 1)
-            cv2.rectangle(frame, (boxes[0][3], boxes[0][2]), (boxes[0][1], boxes[0][0]), (255, 0, 0), 2)
-
-        # Display frame
-        cv2.imshow("FAS Detector", frame)
-
-        # Reduce frame rate for slower detection
-        key = cv2.waitKey(15)
-        if key == ord('q'):
-            break
-
-    # Release video stream and close windows
-    video.release()
-    cv2.destroyAllWindows()
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default= r"FAS_detector\model\seresnext50.ckpt")
-    parser.add_argument("--modelname", type=str, default="seresnext50")
+    parser.add_argument("--model_checkpoint", type=str, default= r"face-anti-spoofing/FAS_detector\model\feathernet.ckpt")
+    parser.add_argument("--modelname", type=str, default="feathernet")
     parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
     parser.add_argument("--num_classes", type=int, default=2)
     args = parser.parse_args()
-    FAS_MODEL_PATH = r"FAS_detector\model\antispoofing.h5"
+    
     #model = VideoUtils.load_keras_model(FAS_MODEL_PATH)
     #face_detection_with_liveness(model)
     model = load_model(args)
