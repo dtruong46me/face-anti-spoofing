@@ -49,7 +49,7 @@ bash setup.sh
 ```
 
 3. Training
-First, you should download [CV_dataset](https://www.kaggle.com/datasets/valleyy/cv-dataset) and put it in the folder with the same parent directory with `/src`. Then run the scripts
+First, you should download [CV_dataset](https://www.kaggle.com/datasets/valleyy/cv-dataset) and put it into the folder `/face-anti-spoofing/cv-dataset` and run the scipt:
 
 ```
 python run_training.py \
@@ -66,10 +66,20 @@ or your can use `bash train_all.sh` to train, evaluate, predict all pretrained m
 
 You can follow scipts in the notebook: https://www.kaggle.com/code/dtruon46/master-face-anti-spoofing or the file: `/face-anti-spoofing/code train.ipynb` 
 
-4. Models
-- ResNeXT50:
-- MobileNetV3
-- FeatherNet
+4. Demo
+
+You can download weights of models (`.ckpt` file) and put it into the `/face-anti-spoofing/FAS_detector/model/your_model.ckpt`. Put your test image in the `/face-anti-spoofing/assets/samples/your_images.jpg`
+
+- ResNeXT50: https://www.kaggle.com/models/dtruon46/resnext50-face-anti-spoofing (106Mb)
+- MobileNetV3: https://www.kaggle.com/models/dtruon46/mobilenetv3-face-anti-spoofing (28MB)
+- FeatherNet: https://www.kaggle.com/models/dtruon46/feathernet-face-anti-spoofing (4.3MB)
+
+Then run the scripts
+
+```
+python predict_sample.py
+```
+
 
 ## Contributions
 - Supervisor: Prof. Dang Tuan Linh
