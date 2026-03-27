@@ -14,6 +14,7 @@ if gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
     except RuntimeError as e:
         print(e)
+
 def add_padding_and_resize(image, target_size=(224, 224), padding_color=(0, 255, 0)):
         # Get original image dimensions
         h, w, _ = image.shape
@@ -33,21 +34,45 @@ def add_padding_and_resize(image, target_size=(224, 224), padding_color=(0, 255,
         image_resized = cv2.resize(padded_image, target_size)
 
         return image_resized
+
+
 class VideoUtils(object):
     
-    def get_image(frame, boxes):
+    @staticmethod
+    def get_image(frame: np.ndarray, boxes: list) -> np.ndarray:
+        """
+        Extract largest face region from frame using bounding boxes.
+        
+        Args:
+            frame: Input video frame (HxWx3)
+            boxes: List of bounding boxes in format [left, top, right, bottom]
+            
+        Returns:
+            Padded and resized face image (224x224)
+        """
         # Extract face locations from bounding boxes
-        face_location = [[left, top, right, bottom] for top, right, bottom, left in boxes]
+        # boxes format: [left, top, right, bottom]
         try:
             # Find the largest face based on area
-            xmin, ymin, xmax, ymax = max(face_location, key=lambda x: (x[2]-x[0]) * (x[3]-x[1]))
-        except ValueError as e:
+            largest_box = max(
+                boxes, 
+                key=lambda box: (box[2] - box[0]) * (box[3] - box[1])
+            )
+            left, top, right, bottom = largest_box
+            
+            # Extract the face region with bounds checking
+            face_img = frame[
+                max(top, 0):bottom,
+                max(left, 0):right
+            ].copy()
+            
+            # Add padding and resize to standard size
+            face_img = add_padding_and_resize(face_img)
+            return face_img
+            
+        except (ValueError, IndexError) as e:
+            print(f"[ERROR] Failed to extract face: {e}")
             return None
-    
-        # Extract the face from the frame
-        face_img = frame[max(ymin, 0):ymax, max(xmin, 0):xmax].copy()
-        face_img = add_padding_and_resize(face_img)
-        return face_img
 
 
 

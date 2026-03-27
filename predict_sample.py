@@ -1,85 +1,96 @@
-import torch
+"""
+Sample prediction script for Face Anti-Spoofing models.
+Demonstrates inference on a single image with visualization.
+"""
 
-import sys, os, argparse
+import sys
+import os
+import argparse
 from PIL import Image
 import matplotlib.pyplot as plt
-import torch
 
 path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
 
-from src.models.ln_model import ModelInterface
-from src.models.resnext50 import SEResNeXT50
-from src.utils import load_transform_2, load_backbone
+from src.predictor import FASPredictor
+from src.config import get_inference_args
 
 
-def predict_sample(args):
-    # Define the preprocessing transformations
-    preprocess = load_transform_2()
+def predict_sample(args: argparse.Namespace) -> dict:
+    """
+    Run inference on a single sample image.
     
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-    backbone = load_backbone(args)
-
-    # Load model from path
-    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
-                                                model=backbone,
-                                                input_shape=args.input_shape, 
-                                                num_classes=args.num_classes)
+    Args:
+        args: Inference configuration arguments
+        
+    Returns:
+        Dictionary containing prediction results
+    """
+    # Initialize predictor
+    predictor = FASPredictor(
+        model_checkpoint=args.model_checkpoint,
+        modelname=args.modelname,
+        input_shape=args.input_shape,
+        num_classes=args.num_classes
+    )
     
-    model.to(device)
-
-    model.eval()
-
-    if type(args.image)==str:
-        image = Image.open(args.image).convert('RGB')
+    # Run prediction
+    result = predictor.predict_from_path(args.image)
     
-    # Apply the transformations to the input image
-
-    image = preprocess(image).unsqueeze(0)
-    image = image.to(device)
-
-    plt.imshow(image.squeeze().permute(1, 2, 0).cpu().numpy())  # Convert tensor back to image for visualization
-    plt.axis("off")
-    plt.show()
-    plt.savefig("sample.jpg")
-    
-    # Perform the prediction
-    with torch.no_grad():
-        outputs = model(image)
-        probabilities = torch.softmax(outputs, dim=1)
-
-    # Get the predicted class and the associated probabilities
-    predicted_class = torch.argmax(probabilities, dim=1).item()
-    predicted_probabilities = probabilities.squeeze().cpu().numpy()
-
-    if predicted_class == 0:
-        result = {'tensor': [1, 0], 'class': 0, 'label': 'real', 'probability': predicted_probabilities[0]}
-    else:
-        result = {'tensor': [0, 1], 'class': 1, 'label': 'fake', 'probability': predicted_probabilities[1]}
-
-    plt.imshow(image.squeeze().permute(1, 2, 0).cpu().numpy())
-    plt.title(f"Predict: {result['class']} - {result['label']} - prob: {result['probability']:.4f}")
-    plt.axis("off")
-    plt.show()
-    plt.savefig("predict.jpg")
-
     return result
 
+
+def visualize_result(image_path: str, result: dict) -> None:
+    """
+    Visualize prediction result with the input image.
+    
+    Args:
+        image_path: Path to input image
+        result: Prediction result dictionary
+    """
+    image = Image.open(image_path).convert('RGB')
+    
+    plt.figure(figsize=(8, 8))
+    plt.imshow(image)
+    plt.title(
+        f"Prediction: {result['label'].upper()} "
+        f"(confidence: {result['probability']:.2%})"
+    )
+    plt.axis("off")
+    plt.tight_layout()
+    
+    # Save visualization
+    output_path = os.path.splitext(image_path)[0] + "_prediction.jpg"
+    plt.savefig(output_path, dpi=150, bbox_inches='tight')
+    print(f"[INFO] Visualization saved to: {output_path}")
+    
+    plt.show()
+
+
 def main():
-    IMAGE_NAME = "1.png"
-    MODEL_NAME = "seresnext50_v0.ckpt"
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "FAS_detector", "model", MODEL_NAME)))
-    parser.add_argument("--image", type=str, default=os.path.abspath(os.path.join(os.path.dirname(__file__), "assets", "samples", IMAGE_NAME)))
-    parser.add_argument("--modelname", type=str, default="seresnext50")
-    parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
-    parser.add_argument("--num_classes", type=int, default=2)
-    args = parser.parse_args()
-
+    """Main entry point for sample prediction."""
+    args = get_inference_args()
+    
+    # Validate input image exists
+    if not os.path.exists(args.image):
+        print(f"[ERROR] Image file not found: {args.image}")
+        return
+    
+    print("[INFO] Running Face Anti-Spoofing inference...")
     result = predict_sample(args)
-    print(result)
+    
+    print("\n" + "="*50)
+    print("PREDICTION RESULT")
+    print("="*50)
+    print(f"Label: {result['label'].upper()}")
+    print(f"Confidence: {result['probability']:.2%}")
+    print(f"Class: {result['class']}")
+    print(f"Full probabilities: {result['probabilities']}")
+    print("="*50 + "\n")
+    
+    # Visualize result
+    visualize_result(args.image, result)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()

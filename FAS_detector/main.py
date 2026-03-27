@@ -1,148 +1,193 @@
+"""
+Real-time face anti-spoofing detection module.
+Provides video stream processing capabilities for webcam-based liveness detection.
+"""
+
 import sys
 import os
 import argparse
-sys.path.insert(1, os.getcwd())
-from utility.video_utils import VideoUtils
-from face_detector import FaceDetector
 import numpy as np
-import tensorflow as tf
 import cv2
-parent_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, parent_dir)
-
-from src.models.ln_model import ModelInterface
-from src.models.resnext50 import SEResNeXT50
-from src.utils import  load_transform_2, load_backbone
-import torch
 from PIL import Image
-preprocess = load_transform_2()
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# Allow GPU memory growth
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    except RuntimeError as e:
-        print(e)
 
-def load_model(args):
+sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
-    backbone = load_backbone(args)
+from FAS_detector.face_detector import FaceDetector
+from FAS_detector.utility.video_utils import VideoUtils
+from src.predictor import FASPredictor
+from src.config import get_video_args
 
-    # Load model from path
-    model = ModelInterface.load_from_checkpoint(args.model_checkpoint, 
-                                                model=backbone,
-                                                input_shape=args.input_shape, 
-                                                num_classes=args.num_classes)
+
+class FASDetector:
+    """
+    Face Anti-Spoofing detector with video stream support.
     
-    model.to(device)
-
-    model.eval()
-
-    return model 
-
-def fas(model, image) :
-    # Apply the transformations to the input image
-
-    image = preprocess(image).unsqueeze(0)
-    image = image.to(device)
-
+    Attributes:
+        face_detector: Face detector module
+        predictor: FAS predictor for liveness detection
+    """
     
-    # Perform the prediction
-    with torch.no_grad():
-        outputs = model(image)
-        probabilities = torch.softmax(outputs, dim=1)
-
-    # Get the predicted class and the associated probabilities
-    predicted_class = torch.argmax(probabilities, dim=1).item()
-    predicted_probabilities = probabilities.squeeze().cpu().numpy()
-
-    if predicted_class == 0:
-        result = {'tensor': [1, 0], 'class': 0, 'label': 'real', 'probability': predicted_probabilities[0]}
-    else:
-        result = {'tensor': [0, 1], 'class': 1, 'label': 'fake', 'probability': predicted_probabilities[1]}
-
-
-    return result
-
-
-
-print("[INFO] Loading Face Detector")
-face_detector = FaceDetector()
-
-print("[INFO] Starting video stream...")
-
-
-def face_detection_with_liveness_check(model):
-    # Initialize video stream
-    video = cv2.VideoCapture(0)
-    while True:
+    def __init__(self, modelname: str = "feathernet", 
+                 model_checkpoint: str = "") -> None:
+        """
+        Initialize FAS detector.
+        
+        Args:
+            modelname: Model architecture name
+            model_checkpoint: Path to model checkpoint file
+        """
+        print("[INFO] Loading Face Detector...")
+        self.face_detector = FaceDetector()
+        
+        if model_checkpoint is None:
+            model_checkpoint = os.path.join(
+                os.path.dirname(__file__),
+                "model",
+                f"{modelname}.ckpt"
+            )
+        
+        print("[INFO] Loading FAS Predictor...")
+        self.predictor = FASPredictor(
+            model_checkpoint=model_checkpoint,
+            modelname=modelname
+        )
+    
+    def detect_and_predict(self, frame: np.ndarray) -> tuple:
+        """
+        Detect faces and predict liveness in a single frame.
+        
+        Args:
+            frame: Input frame in BGR format (OpenCV)
+            
+        Returns:
+            Tuple of (annotated_frame, predictions)
+        """
+        # Convert BGR to RGB for face detector
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        boxes = self.face_detector(np.array(frame_rgb))
+        
+        # Display face detection count
+        num_faces = len(boxes)
+        cv2.putText(
+            frame,
+            f"Faces Detected: {num_faces}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (0, 255, 0) if num_faces > 0 else (0, 0, 255),
+            2
+        )
+        
+        predictions = []
+        
+        if num_faces > 0:
+            # Extract face region and run liveness check
+            face_image = VideoUtils.get_image(frame, boxes)
+            face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB) # type: ignore
+            pil_image = Image.fromarray(face_rgb)
+            result = self.predictor.predict(pil_image)
+            predictions.append(result)
+            
+            # Annotate frame with results
+            for box in boxes:
+                x1, y1, x2, y2 = map(int, box)
+                
+                # Choose color based on prediction
+                color = (0, 255, 0) if result['label'] == 'real' else (0, 0, 255)
+                
+                # Draw bounding box
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                
+                # Draw label with confidence
+                label_text = (
+                    f"{result['label'].upper()} "
+                    f"({result['probability']:.2%})"
+                )
+                cv2.putText(
+                    frame,
+                    label_text,
+                    (x1, y1 - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6,
+                    color,
+                    2
+                )
+        
+        return frame, predictions
+    
+    def run(self, camera_id: int = 0, save_output: bool = False) -> None:
+        """
+        Run real-time face anti-spoofing detection on video stream.
+        
+        Args:
+            camera_id: Camera device ID (0 for default)
+            save_output: Whether to save frames on exit
+        """
+        print("[INFO] Starting video stream...")
+        video = cv2.VideoCapture(camera_id)
+        
         if not video.isOpened():
-            print("[ERROR] Cannot find webcam")
-            pass
-
-        # Read frame from webcam
-        ret, frame = video.read()
-
-        # Call face detector to obtain face image
-        frame_bgr = frame[..., ::-1]
-        boxes = face_detector(np.array(frame_bgr))
-
-        # Check if face is present
-        n = len(boxes)
-        if n == 0:
-            cv2.putText(frame, "Faces: %s" % (n), (500, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 200), 2)
-        else:
-            cv2.putText(frame, "Faces: %s" % (n), (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 200), 2)
-            image = VideoUtils.get_image(frame, boxes)
-            image = image[..., ::-1]
-            face_image = Image.fromarray(image)  
-            # Call the function predict_fas and get the result
-            result = fas(model, face_image)
-
-            # Get the label and probability from the result
-            label = result['label']
-            probability = result['probability']
-
-            # Create the display text
-            display_text = f"{label} ({probability:.2f})"
-
-            # Determine the color based on the label
-            color = (0, 0, 200) if label == 'real' else (0, 200, 0)
-
-            # Display on the frame
-            cv2.putText(frame, f"FAS: {display_text}", (20, 30), cv2.FONT_HERSHEY_DUPLEX, 0.7, color, 1)
-            cv2.rectangle(frame, (boxes[0][3], boxes[0][2]), (boxes[0][1], boxes[0][0]), (255, 0, 0), 2)
-
-        # Display frame
-        cv2.imshow("FAS Detector", frame)
-
-        # Reduce frame rate for slower detection
-        key = cv2.waitKey(15)
-        if key == ord('q'):
-            face_image.save('output_image.png')
-            print("save")
-            break
-
-    # Release video stream and close windows
-    video.release()
-    cv2.destroyAllWindows()
+            print("[ERROR] Cannot open camera. Check camera connection.")
+            return
+        
+        # Get video properties
+        fps = video.get(cv2.CAP_PROP_FPS)
+        width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        
+        print(f"[INFO] Video stream: {width}x{height} @ {fps:.0f} FPS")
+        print("[INFO] Press 'q' to quit, 's' to save current frame")
+        
+        output_image = None
+        
+        try:
+            while True:
+                ret, frame = video.read()
+                
+                if not ret:
+                    print("[ERROR] Failed to read frame from stream")
+                    break
+                
+                # Process frame
+                annotated_frame, predictions = self.detect_and_predict(frame)
+                
+                # Display result
+                cv2.imshow("Face Anti-Spoofing Detection", annotated_frame)
+                output_image = annotated_frame
+                
+                # Handle key presses
+                key = cv2.waitKey(30) & 0xFF
+                if key == ord('q'):
+                    print("[INFO] Stopping...")
+                    break
+                elif key == ord('s'):
+                    cv2.imwrite("fas_output.jpg", annotated_frame)
+                    print("[INFO] Frame saved to fas_output.jpg")
+        
+        finally:
+            video.release()
+            cv2.destroyAllWindows()
+            
+            if save_output and output_image is not None:
+                cv2.imwrite("fas_output.jpg", output_image)
+                print("[INFO] Output saved to fas_output.jpg")
+            
+            print("[INFO] Stream closed")
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model_checkpoint", type=str, default= r"face-anti-spoofing/FAS_detector\model\feathernet.ckpt")
-    parser.add_argument("--modelname", type=str, default="feathernet")
-    parser.add_argument("--input_shape", type=tuple, default=(3,224,224))
-    parser.add_argument("--num_classes", type=int, default=2)
-    args = parser.parse_args()
+    """Main entry point for FAS detector."""
+    args = get_video_args()
     
-    #model = VideoUtils.load_keras_model(FAS_MODEL_PATH)
-    #face_detection_with_liveness(model)
-    model = load_model(args)
-    face_detection_with_liveness_check(model)
+    # Initialize detector
+    detector = FASDetector(
+        modelname=args.modelname,
+        model_checkpoint=args.model_checkpoint
+    )
+    
+    # Run detection
+    detector.run(camera_id=args.camera_id)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
